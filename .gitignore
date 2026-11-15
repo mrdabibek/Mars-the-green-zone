@@ -1,0 +1,32 @@
+# Unreal Engine 5 build caches & local logs
+Binaries/
+DerivedDataCache/
+Intermediate/
+Saved/
+Build/Linux*/
+*.VC.db
+*.sln
+*.suo
+*.opensdf
+*.sdf
+*.log
+*.pdb
+*.so
+*.a
+
+# IDE & OS
+.vs/
+.vscode/
+.idea/
+.DS_Store
+__pycache__/
+*.py[cod]
+*.blend1
+core.*
+
+# Temporary QA / scratch artifact folders
+Assets/*_QA/
+Assets/Creatures/Independent_QA/
+Assets/Creatures/Animation_Working_Set/
+Assets/FirstPerson_Animation_Work/
+Docs/Screens_2026-11-14/

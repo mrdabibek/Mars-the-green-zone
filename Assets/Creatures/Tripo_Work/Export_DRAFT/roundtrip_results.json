@@ -1,0 +1,104 @@
+[
+  {
+    "motion_quarter_frame": 0.010430796934524405,
+    "file": "Breacher_idle_DRAFT.fbx",
+    "armatures": 1,
+    "bones": 23,
+    "meshes": 1,
+    "actions": [
+      [
+        "Armature|Scene",
+        [
+          2.0,
+          62.0
+        ]
+      ]
+    ],
+    "weighted_meshes": 1
+  },
+  {
+    "motion_quarter_frame": 0.10566379748485705,
+    "file": "Breacher_walk_DRAFT.fbx",
+    "armatures": 1,
+    "bones": 23,
+    "meshes": 1,
+    "actions": [
+      [
+        "Armature|Scene",
+        [
+          2.0,
+          63.0
+        ]
+      ]
+    ],
+    "weighted_meshes": 1
+  },
+  {
+    "motion_quarter_frame": 0.011029429938694562,
+    "file": "Raider_idle_DRAFT.fbx",
+    "armatures": 1,
+    "bones": 32,
+    "meshes": 1,
+    "actions": [
+      [
+        "Armature|Scene",
+        [
+          2.0,
+          62.0
+        ]
+      ]
+    ],
+    "weighted_meshes": 1
+  },
+  {
+    "motion_quarter_frame": 0.17372186867579556,
+    "file": "Raider_walk_DRAFT.fbx",
+    "armatures": 1,
+    "bones": 32,
+    "meshes": 1,
+    "actions": [
+      [
+        "Armature|Scene",
+        [
+          2.0,
+          63.0
+        ]
+      ]
+    ],
+    "weighted_meshes": 1
+  },
+  {
+    "motion_quarter_frame": 0.004749879346428492,
+    "file": "Scavenger_idle_DRAFT.fbx",
+    "armatures": 1,
+    "bones": 18,
+    "meshes": 1,
+    "actions": [
+      [
+        "Scavenger_Draft_Rig|Scene",
+        [
+          2.0,
+          62.0
+        ]
+      ]
+    ],
+    "weighted_meshes": 1
+  },
+  {
+    "motion_quarter_frame": 0.11206356758210118,
+    "file": "Scavenger_walk_DRAFT.fbx",
+    "armatures": 1,
+    "bones": 18,
+    "meshes": 1,
+    "actions": [
+      [
+        "Scavenger_Draft_Rig|Scene",
+        [
+          2.0,
+          32.0
+        ]
+      ]
+    ],
+    "weighted_meshes": 1
+  }
+]

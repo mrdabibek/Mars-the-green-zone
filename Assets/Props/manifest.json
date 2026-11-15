@@ -1,0 +1,703 @@
+{
+  "devices": [
+    {
+      "fbx": "Assets/Props/Devices/SM_Dev_PowerUnit.fbx",
+      "vertices": 2272,
+      "polygons": 2096,
+      "uv_layers": 1,
+      "has_custom_normals": true,
+      "ue_size_cm": [
+        80.0,
+        80.0,
+        120.0
+      ],
+      "ue_min_cm": [
+        -40.0,
+        -40.0,
+        -0.0
+      ],
+      "ue_max_cm": [
+        40.0,
+        40.0,
+        120.0
+      ],
+      "material_slots": [
+        "M_Dev_Armor",
+        "M_Dev_MetalDark",
+        "M_Dev_Copper",
+        "M_EmissiveAccent"
+      ],
+      "name": "SM_Dev_PowerUnit"
+    },
+    {
+      "fbx": "Assets/Props/Devices/SM_Dev_OxygenGen.fbx",
+      "vertices": 3332,
+      "polygons": 3188,
+      "uv_layers": 1,
+      "has_custom_normals": true,
+      "ue_size_cm": [
+        80.0,
+        80.0,
+        120.0
+      ],
+      "ue_min_cm": [
+        -40.0,
+        -40.0,
+        -0.0
+      ],
+      "ue_max_cm": [
+        40.0,
+        40.0,
+        120.0
+      ],
+      "material_slots": [
+        "M_Dev_Armor",
+        "M_Dev_MetalDark",
+        "M_Dev_Copper",
+        "M_EmissiveAccent"
+      ],
+      "name": "SM_Dev_OxygenGen"
+    },
+    {
+      "fbx": "Assets/Props/Devices/SM_Dev_Purifier.fbx",
+      "vertices": 2936,
+      "polygons": 2728,
+      "uv_layers": 1,
+      "has_custom_normals": true,
+      "ue_size_cm": [
+        90.0,
+        80.0,
+        120.0
+      ],
+      "ue_min_cm": [
+        -45.0,
+        -40.0,
+        -0.0
+      ],
+      "ue_max_cm": [
+        45.0,
+        40.0,
+        120.0
+      ],
+      "material_slots": [
+        "M_Dev_Armor",
+        "M_Dev_MetalDark",
+        "M_Dev_Copper",
+        "M_EmissiveAccent"
+      ],
+      "name": "SM_Dev_Purifier"
+    },
+    {
+      "fbx": "Assets/Props/Devices/SM_Dev_GreenhouseSeal.fbx",
+      "vertices": 1824,
+      "polygons": 1694,
+      "uv_layers": 1,
+      "has_custom_normals": true,
+      "ue_size_cm": [
+        80.0,
+        80.0,
+        120.0
+      ],
+      "ue_min_cm": [
+        -40.0,
+        -40.0,
+        -0.0
+      ],
+      "ue_max_cm": [
+        40.0,
+        40.0,
+        120.0
+      ],
+      "material_slots": [
+        "M_Dev_Armor",
+        "M_Dev_MetalDark",
+        "M_Dev_Copper",
+        "M_EmissiveAccent"
+      ],
+      "name": "SM_Dev_GreenhouseSeal"
+    },
+    {
+      "fbx": "Assets/Props/Devices/SM_Dev_WaterTank.fbx",
+      "vertices": 2562,
+      "polygons": 2448,
+      "uv_layers": 1,
+      "has_custom_normals": true,
+      "ue_size_cm": [
+        160.0,
+        160.0,
+        160.0
+      ],
+      "ue_min_cm": [
+        -80.0,
+        -80.0,
+        -0.0
+      ],
+      "ue_max_cm": [
+        80.0,
+        80.0,
+        160.0
+      ],
+      "material_slots": [
+        "M_Dev_Armor",
+        "M_Dev_MetalDark",
+        "M_Dev_Copper",
+        "M_EmissiveAccent"
+      ],
+      "name": "SM_Dev_WaterTank"
+    },
+    {
+      "fbx": "Assets/Props/Devices/SM_Dev_WaterPipe.fbx",
+      "vertices": 2688,
+      "polygons": 2474,
+      "uv_layers": 1,
+      "has_custom_normals": true,
+      "ue_size_cm": [
+        300.0,
+        40.0,
+        40.0
+      ],
+      "ue_min_cm": [
+        -150.0,
+        -20.0,
+        -0.0
+      ],
+      "ue_max_cm": [
+        150.0,
+        20.0,
+        40.0
+      ],
+      "material_slots": [
+        "M_Dev_Armor",
+        "M_Dev_MetalDark",
+        "M_Dev_Copper",
+        "M_EmissiveAccent"
+      ],
+      "name": "SM_Dev_WaterPipe"
+    },
+    {
+      "fbx": "Assets/Props/Devices/SM_Dev_CommsRelay.fbx",
+      "vertices": 1342,
+      "polygons": 1222,
+      "uv_layers": 1,
+      "has_custom_normals": true,
+      "ue_size_cm": [
+        120.0,
+        120.0,
+        260.0
+      ],
+      "ue_min_cm": [
+        -60.0,
+        -60.0,
+        -0.0
+      ],
+      "ue_max_cm": [
+        60.0,
+        60.0,
+        260.0
+      ],
+      "material_slots": [
+        "M_Dev_Armor",
+        "M_Dev_MetalDark",
+        "M_Dev_Copper",
+        "M_EmissiveAccent"
+      ],
+      "name": "SM_Dev_CommsRelay"
+    },
+    {
+      "fbx": "Assets/Props/Devices/SM_Dev_Transmitter.fbx",
+      "vertices": 768,
+      "polygons": 740,
+      "uv_layers": 1,
+      "has_custom_normals": true,
+      "ue_size_cm": [
+        80.0,
+        100.0,
+        130.0
+      ],
+      "ue_min_cm": [
+        -40.0,
+        -50.0,
+        -0.0
+      ],
+      "ue_max_cm": [
+        40.0,
+        50.0,
+        130.0
+      ],
+      "material_slots": [
+        "M_Dev_Armor",
+        "M_Dev_MetalDark",
+        "M_Dev_Copper",
+        "M_EmissiveAccent"
+      ],
+      "name": "SM_Dev_Transmitter"
+    }
+  ],
+  "gameplay": [
+    {
+      "fbx": "Assets/Props/Gameplay/SM_PlantPlot.fbx",
+      "vertices": 1264,
+      "polygons": 1268,
+      "uv_layers": 1,
+      "has_custom_normals": true,
+      "ue_size_cm": [
+        180.0,
+        180.0,
+        40.0
+      ],
+      "ue_min_cm": [
+        -90.0,
+        -90.0,
+        -0.0
+      ],
+      "ue_max_cm": [
+        90.0,
+        90.0,
+        40.0
+      ],
+      "material_slots": [
+        "M_Dev_MetalDark",
+        "M_Dev_Armor",
+        "M_RegolithSoil",
+        "M_EmissiveAccent"
+      ],
+      "name": "SM_PlantPlot"
+    },
+    {
+      "fbx": "Assets/Props/Gameplay/SM_Plant_Seed.fbx",
+      "vertices": 242,
+      "polygons": 236,
+      "uv_layers": 1,
+      "has_custom_normals": true,
+      "ue_size_cm": [
+        15.0,
+        15.0,
+        12.0
+      ],
+      "ue_min_cm": [
+        -7.5,
+        -7.5,
+        0.0
+      ],
+      "ue_max_cm": [
+        7.5,
+        7.5,
+        12.0
+      ],
+      "material_slots": [
+        "M_PlantFoliage",
+        "M_RegolithSoil"
+      ],
+      "name": "SM_Plant_Seed"
+    },
+    {
+      "fbx": "Assets/Props/Gameplay/SM_Plant_Seedling.fbx",
+      "vertices": 566,
+      "polygons": 504,
+      "uv_layers": 1,
+      "has_custom_normals": true,
+      "ue_size_cm": [
+        35.0,
+        35.0,
+        55.0
+      ],
+      "ue_min_cm": [
+        -17.5,
+        -17.5,
+        -0.0
+      ],
+      "ue_max_cm": [
+        17.5,
+        17.5,
+        55.0
+      ],
+      "material_slots": [
+        "M_PlantFoliage",
+        "M_RegolithSoil"
+      ],
+      "name": "SM_Plant_Seedling"
+    },
+    {
+      "fbx": "Assets/Props/Gameplay/SM_Pickup_Parts.fbx",
+      "vertices": 632,
+      "polygons": 606,
+      "uv_layers": 1,
+      "has_custom_normals": true,
+      "ue_size_cm": [
+        36.0,
+        28.0,
+        24.0
+      ],
+      "ue_min_cm": [
+        -18.0,
+        -14.0,
+        -0.0
+      ],
+      "ue_max_cm": [
+        18.0,
+        14.0,
+        24.0
+      ],
+      "material_slots": [
+        "M_Pickup_PartsMat",
+        "M_Dev_MetalDark",
+        "M_EmissiveAccent"
+      ],
+      "name": "SM_Pickup_Parts"
+    },
+    {
+      "fbx": "Assets/Props/Gameplay/SM_Pickup_Ammo.fbx",
+      "vertices": 680,
+      "polygons": 622,
+      "uv_layers": 1,
+      "has_custom_normals": true,
+      "ue_size_cm": [
+        30.0,
+        22.0,
+        20.0
+      ],
+      "ue_min_cm": [
+        -15.0,
+        -11.0,
+        -0.0
+      ],
+      "ue_max_cm": [
+        15.0,
+        11.0,
+        20.0
+      ],
+      "material_slots": [
+        "M_Pickup_AmmoMat",
+        "M_Dev_MetalDark",
+        "M_EmissiveAccent"
+      ],
+      "name": "SM_Pickup_Ammo"
+    },
+    {
+      "fbx": "Assets/Props/Gameplay/SM_Pickup_Ice.fbx",
+      "vertices": 436,
+      "polygons": 462,
+      "uv_layers": 1,
+      "has_custom_normals": true,
+      "ue_size_cm": [
+        45.0,
+        40.0,
+        38.0
+      ],
+      "ue_min_cm": [
+        -22.5,
+        -20.0,
+        0.0
+      ],
+      "ue_max_cm": [
+        22.5,
+        20.0,
+        38.0
+      ],
+      "material_slots": [
+        "M_IceCrystal",
+        "M_EmissiveAccent",
+        "M_RegolithSoil"
+      ],
+      "name": "SM_Pickup_Ice"
+    },
+    {
+      "fbx": "Assets/Props/Gameplay/SM_Pickup_Seeds.fbx",
+      "vertices": 576,
+      "polygons": 500,
+      "uv_layers": 1,
+      "has_custom_normals": true,
+      "ue_size_cm": [
+        26.0,
+        26.0,
+        34.0
+      ],
+      "ue_min_cm": [
+        -13.0,
+        -13.0,
+        -0.0
+      ],
+      "ue_max_cm": [
+        13.0,
+        13.0,
+        34.0
+      ],
+      "material_slots": [
+        "M_Dev_Armor",
+        "M_Dev_MetalDark",
+        "M_EmissiveAccent"
+      ],
+      "name": "SM_Pickup_Seeds"
+    },
+    {
+      "fbx": "Assets/Props/Gameplay/SM_Defense_TurretBase.fbx",
+      "vertices": 840,
+      "polygons": 754,
+      "uv_layers": 1,
+      "has_custom_normals": true,
+      "ue_size_cm": [
+        90.0,
+        90.0,
+        70.0
+      ],
+      "ue_min_cm": [
+        -45.0,
+        -45.0,
+        -0.0
+      ],
+      "ue_max_cm": [
+        45.0,
+        45.0,
+        70.0
+      ],
+      "material_slots": [
+        "M_Dev_Armor",
+        "M_Dev_MetalDark",
+        "M_EmissiveAccent"
+      ],
+      "name": "SM_Defense_TurretBase"
+    },
+    {
+      "fbx": "Assets/Props/Gameplay/SM_Defense_TurretHead.fbx",
+      "vertices": 904,
+      "polygons": 770,
+      "uv_layers": 1,
+      "has_custom_normals": true,
+      "ue_size_cm": [
+        70.0,
+        38.0,
+        36.0
+      ],
+      "ue_min_cm": [
+        -22.0,
+        -19.0,
+        -0.0
+      ],
+      "ue_max_cm": [
+        48.0,
+        19.0,
+        36.0
+      ],
+      "material_slots": [
+        "M_Dev_Armor",
+        "M_Dev_MetalDark",
+        "M_EmissiveAccent"
+      ],
+      "name": "SM_Defense_TurretHead"
+    },
+    {
+      "fbx": "Assets/Props/Gameplay/SM_Defense_Barrier.fbx",
+      "vertices": 944,
+      "polygons": 868,
+      "uv_layers": 1,
+      "has_custom_normals": true,
+      "ue_size_cm": [
+        160.0,
+        45.0,
+        110.0
+      ],
+      "ue_min_cm": [
+        -80.0,
+        -22.5,
+        -0.0
+      ],
+      "ue_max_cm": [
+        80.0,
+        22.5,
+        110.0
+      ],
+      "material_slots": [
+        "M_Dev_Armor",
+        "M_Dev_MetalDark",
+        "M_EmissiveAccent"
+      ],
+      "name": "SM_Defense_Barrier"
+    }
+  ],
+  "materials": {
+    "M_Dev_Armor": {
+      "base_color": [
+        0.76,
+        0.74,
+        0.7,
+        1.0
+      ],
+      "metallic": 0.18,
+      "roughness": 0.42,
+      "emissive": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "emissive_strength": 0.0,
+      "is_emissive": false,
+      "noise_scale": 14.0,
+      "rough_var": 0.1
+    },
+    "M_Dev_MetalDark": {
+      "base_color": [
+        0.14,
+        0.15,
+        0.17,
+        1.0
+      ],
+      "metallic": 0.85,
+      "roughness": 0.36,
+      "emissive": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "emissive_strength": 0.0,
+      "is_emissive": false,
+      "noise_scale": 22.0,
+      "rough_var": 0.12
+    },
+    "M_Dev_Copper": {
+      "base_color": [
+        0.74,
+        0.39,
+        0.18,
+        1.0
+      ],
+      "metallic": 0.9,
+      "roughness": 0.28,
+      "emissive": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "emissive_strength": 0.0,
+      "is_emissive": false,
+      "noise_scale": 25.0,
+      "rough_var": 0.08
+    },
+    "M_EmissiveAccent": {
+      "base_color": [
+        0.06,
+        0.16,
+        0.2,
+        1.0
+      ],
+      "metallic": 0.1,
+      "roughness": 0.18,
+      "emissive": [
+        0.12,
+        0.78,
+        0.95,
+        1.0
+      ],
+      "emissive_strength": 2.4,
+      "is_emissive": true,
+      "noise_scale": 10.0,
+      "rough_var": 0.02
+    },
+    "M_RegolithSoil": {
+      "base_color": [
+        0.2,
+        0.1,
+        0.07,
+        1.0
+      ],
+      "metallic": 0.0,
+      "roughness": 0.92,
+      "emissive": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "emissive_strength": 0.0,
+      "is_emissive": false,
+      "noise_scale": 32.0,
+      "rough_var": 0.08
+    },
+    "M_PlantFoliage": {
+      "base_color": [
+        0.14,
+        0.5,
+        0.16,
+        1.0
+      ],
+      "metallic": 0.0,
+      "roughness": 0.48,
+      "emissive": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "emissive_strength": 0.0,
+      "is_emissive": false,
+      "noise_scale": 18.0,
+      "rough_var": 0.1
+    },
+    "M_Pickup_PartsMat": {
+      "base_color": [
+        0.8,
+        0.54,
+        0.1,
+        1.0
+      ],
+      "metallic": 0.22,
+      "roughness": 0.38,
+      "emissive": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "emissive_strength": 0.0,
+      "is_emissive": false,
+      "noise_scale": 16.0,
+      "rough_var": 0.1
+    },
+    "M_Pickup_AmmoMat": {
+      "base_color": [
+        0.24,
+        0.3,
+        0.2,
+        1.0
+      ],
+      "metallic": 0.35,
+      "roughness": 0.4,
+      "emissive": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "emissive_strength": 0.0,
+      "is_emissive": false,
+      "noise_scale": 18.0,
+      "rough_var": 0.1
+    },
+    "M_IceCrystal": {
+      "base_color": [
+        0.56,
+        0.85,
+        0.97,
+        1.0
+      ],
+      "metallic": 0.05,
+      "roughness": 0.12,
+      "emissive": [
+        0.08,
+        0.28,
+        0.42,
+        1.0
+      ],
+      "emissive_strength": 0.45,
+      "is_emissive": true,
+      "noise_scale": 12.0,
+      "rough_var": 0.06
+    }
+  },
+  "previews": [
+    "Assets/Props/Previews/Props_Devices_sheet.png",
+    "Assets/Props/Previews/Props_Gameplay_sheet.png"
+  ]
+}

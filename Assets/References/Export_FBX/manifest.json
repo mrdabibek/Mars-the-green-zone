@@ -1,0 +1,61 @@
+[
+  {
+    "name": "SM_NASA_Z2_Spacesuit",
+    "fbx": "/home/dabi/Documents/Mars Last Green/Assets/References/Export_FBX/SM_NASA_Z2_Spacesuit.fbx",
+    "textures": [
+      "SM_NASA_Z2_Spacesuit_z2_Bump_s.png",
+      "SM_NASA_Z2_Spacesuit_z2_Color_s.png",
+      "SM_NASA_Z2_Spacesuit_z2_spec_color_s.png"
+    ],
+    "vertices": 50864,
+    "polygons": 30904,
+    "ue_size_cm": [
+      79.21,
+      103.81,
+      193.0
+    ],
+    "ue_min_cm": [
+      -39.61,
+      -51.9,
+      0.0
+    ]
+  },
+  {
+    "name": "SM_NASA_Habitat_Part1",
+    "fbx": "/home/dabi/Documents/Mars Last Green/Assets/References/Export_FBX/SM_NASA_Habitat_Part1.fbx",
+    "textures": [
+      "SM_NASA_Habitat_Part1_HDU_01.png"
+    ],
+    "vertices": 1922,
+    "polygons": 2264,
+    "ue_size_cm": [
+      559.56,
+      244.21,
+      320.0
+    ],
+    "ue_min_cm": [
+      -279.78,
+      -122.1,
+      0.0
+    ]
+  },
+  {
+    "name": "SM_NASA_Habitat_Part2",
+    "fbx": "/home/dabi/Documents/Mars Last Green/Assets/References/Export_FBX/SM_NASA_Habitat_Part2.fbx",
+    "textures": [
+      "SM_NASA_Habitat_Part2_HDU_02.png"
+    ],
+    "vertices": 5099,
+    "polygons": 4320,
+    "ue_size_cm": [
+      927.72,
+      648.04,
+      320.0
+    ],
+    "ue_min_cm": [
+      -463.86,
+      -324.02,
+      0.0
+    ]
+  }
+]

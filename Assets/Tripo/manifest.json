@@ -1,0 +1,263 @@
+{
+  "assets": {
+    "SM_Tripo_BotanicalPod": {
+      "info": {
+        "name": "SM_Tripo_BotanicalPod",
+        "fbx": "Assets/Tripo/SM_Tripo_BotanicalPod.fbx",
+        "vertices": 35789,
+        "polygons": 32486,
+        "triangles": 32486,
+        "uv_layers": 1,
+        "has_custom_normals": true,
+        "ue_size_cm": [
+          160.0,
+          160.0,
+          220.0
+        ],
+        "ue_min_cm": [
+          -80.0,
+          -80.0,
+          0.0
+        ],
+        "ue_max_cm": [
+          80.0,
+          80.0,
+          220.0
+        ],
+        "material_slots": [
+          "M_Tripo_BotanicalPod"
+        ]
+      },
+      "textures": {
+        "base_color": "Assets/Tripo/Textures/T_BotanicalPod_BaseColor.png",
+        "normal": "Assets/Tripo/Textures/T_BotanicalPod_Normal.png",
+        "roughness_metallic": "Assets/Tripo/Textures/T_BotanicalPod_RoughnessMetallic.png",
+        "roughness": "Assets/Tripo/Textures/T_BotanicalPod_Roughness.png",
+        "metallic": "Assets/Tripo/Textures/T_BotanicalPod_Metallic.png"
+      },
+      "preview": "Assets/Tripo/Previews/BotanicalPod_sheet.png"
+    },
+    "SM_Tripo_PulseRifle": {
+      "info": {
+        "name": "SM_Tripo_PulseRifle",
+        "fbx": "Assets/Tripo/SM_Tripo_PulseRifle.fbx",
+        "vertices": 12523,
+        "polygons": 24887,
+        "triangles": 24887,
+        "uv_layers": 1,
+        "has_custom_normals": true,
+        "ue_size_cm": [
+          79.99,
+          13.41,
+          36.58
+        ],
+        "ue_min_cm": [
+          -30.23,
+          -6.7,
+          -21.98
+        ],
+        "ue_max_cm": [
+          49.76,
+          6.71,
+          14.6
+        ],
+        "material_slots": [
+          "M_Tripo_PulseRifle"
+        ]
+      },
+      "textures": {
+        "normal": "Assets/Tripo/Textures/T_PulseRifle_Normal.png",
+        "base_color": "Assets/Tripo/Textures/T_PulseRifle_BaseColor.png",
+        "roughness": "Assets/Tripo/Textures/T_PulseRifle_Roughness.png",
+        "metallic": "Assets/Tripo/Textures/T_PulseRifle_Metallic.png",
+        "roughness_metallic": "Assets/Tripo/Textures/T_PulseRifle_RoughnessMetallic.png"
+      },
+      "preview": "Assets/Tripo/Previews/PulseRifle_sheet.png"
+    },
+    "SM_Tripo_AlienBeacon": {
+      "info": {
+        "name": "SM_Tripo_AlienBeacon",
+        "fbx": "Assets/Tripo/SM_Tripo_AlienBeacon.fbx",
+        "vertices": 14237,
+        "polygons": 28494,
+        "triangles": 28494,
+        "uv_layers": 1,
+        "has_custom_normals": true,
+        "ue_size_cm": [
+          130.0,
+          130.0,
+          260.0
+        ],
+        "ue_min_cm": [
+          -65.0,
+          -65.0,
+          0.0
+        ],
+        "ue_max_cm": [
+          65.0,
+          65.0,
+          260.0
+        ],
+        "material_slots": [
+          "M_Tripo_AlienBeacon"
+        ]
+      },
+      "textures": {
+        "normal": "Assets/Tripo/Textures/T_AlienBeacon_Normal.png",
+        "base_color": "Assets/Tripo/Textures/T_AlienBeacon_BaseColor.png",
+        "roughness": "Assets/Tripo/Textures/T_AlienBeacon_Roughness.png",
+        "metallic": "Assets/Tripo/Textures/T_AlienBeacon_Metallic.png",
+        "roughness_metallic": "Assets/Tripo/Textures/T_AlienBeacon_RoughnessMetallic.png"
+      },
+      "preview": "Assets/Tripo/Previews/AlienBeacon_sheet.png"
+    },
+    "SM_Tripo_SentryTurret": {
+      "info": {
+        "name": "SM_Tripo_SentryTurret",
+        "fbx": "Assets/Tripo/SM_Tripo_SentryTurret.fbx",
+        "vertices": 14231,
+        "polygons": 28506,
+        "triangles": 28506,
+        "uv_layers": 1,
+        "has_custom_normals": true,
+        "ue_size_cm": [
+          110.0,
+          110.0,
+          145.0
+        ],
+        "ue_min_cm": [
+          -55.0,
+          -55.0,
+          -0.0
+        ],
+        "ue_max_cm": [
+          55.0,
+          55.0,
+          145.0
+        ],
+        "material_slots": [
+          "M_Tripo_SentryTurret"
+        ]
+      },
+      "textures": {
+        "normal": "Assets/Tripo/Textures/T_SentryTurret_Normal.png",
+        "base_color": "Assets/Tripo/Textures/T_SentryTurret_BaseColor.png",
+        "roughness": "Assets/Tripo/Textures/T_SentryTurret_Roughness.png",
+        "metallic": "Assets/Tripo/Textures/T_SentryTurret_Metallic.png",
+        "roughness_metallic": "Assets/Tripo/Textures/T_SentryTurret_RoughnessMetallic.png"
+      },
+      "preview": "Assets/Tripo/Previews/SentryTurret_sheet.png"
+    },
+    "SM_Tripo_OxygenHarvester": {
+      "info": {
+        "name": "SM_Tripo_OxygenHarvester",
+        "fbx": "Assets/Tripo/SM_Tripo_OxygenHarvester.fbx",
+        "vertices": 13909,
+        "polygons": 27930,
+        "triangles": 27930,
+        "uv_layers": 1,
+        "has_custom_normals": true,
+        "ue_size_cm": [
+          125.0,
+          125.0,
+          210.0
+        ],
+        "ue_min_cm": [
+          -62.5,
+          -62.5,
+          0.0
+        ],
+        "ue_max_cm": [
+          62.5,
+          62.5,
+          210.0
+        ],
+        "material_slots": [
+          "M_Tripo_OxygenHarvester"
+        ]
+      },
+      "textures": {
+        "normal": "Assets/Tripo/Textures/T_OxygenHarvester_Normal.png",
+        "base_color": "Assets/Tripo/Textures/T_OxygenHarvester_BaseColor.png",
+        "roughness": "Assets/Tripo/Textures/T_OxygenHarvester_Roughness.png",
+        "metallic": "Assets/Tripo/Textures/T_OxygenHarvester_Metallic.png",
+        "roughness_metallic": "Assets/Tripo/Textures/T_OxygenHarvester_RoughnessMetallic.png"
+      },
+      "preview": "Assets/Tripo/Previews/OxygenHarvester_sheet.png"
+    },
+    "SM_Tripo_DropLander": {
+      "info": {
+        "name": "SM_Tripo_DropLander",
+        "fbx": "Assets/Tripo/SM_Tripo_DropLander.fbx",
+        "vertices": 15922,
+        "polygons": 32000,
+        "triangles": 32000,
+        "uv_layers": 1,
+        "has_custom_normals": true,
+        "ue_size_cm": [
+          250.0,
+          250.0,
+          200.0
+        ],
+        "ue_min_cm": [
+          -125.0,
+          -125.0,
+          0.0
+        ],
+        "ue_max_cm": [
+          125.0,
+          125.0,
+          200.0
+        ],
+        "material_slots": [
+          "M_Tripo_DropLander"
+        ]
+      },
+      "textures": {
+        "normal": "Assets/Tripo/Textures/T_DropLander_Normal.png",
+        "base_color": "Assets/Tripo/Textures/T_DropLander_BaseColor.png",
+        "roughness": "Assets/Tripo/Textures/T_DropLander_Roughness.png",
+        "metallic": "Assets/Tripo/Textures/T_DropLander_Metallic.png",
+        "roughness_metallic": "Assets/Tripo/Textures/T_DropLander_RoughnessMetallic.png"
+      },
+      "preview": "Assets/Tripo/Previews/DropLander_sheet.png"
+    },
+    "SM_Tripo_HeavyDropship": {
+      "info": {
+        "name": "SM_Tripo_HeavyDropship",
+        "fbx": "Assets/Tripo/SM_Tripo_HeavyDropship.fbx",
+        "vertices": 20039,
+        "polygons": 38770,
+        "triangles": 40394,
+        "uv_layers": 1,
+        "has_custom_normals": true,
+        "ue_size_cm": [
+          1260.0,
+          880.0,
+          520.0
+        ],
+        "ue_min_cm": [
+          -630.0,
+          -440.0,
+          -0.0
+        ],
+        "ue_max_cm": [
+          630.0,
+          440.0,
+          520.0
+        ],
+        "material_slots": [
+          "M_Tripo_HeavyDropship"
+        ]
+      },
+      "textures": {
+        "normal": "Assets/Tripo/Textures/T_HeavyDropship_Normal.png",
+        "base_color": "Assets/Tripo/Textures/T_HeavyDropship_BaseColor.png",
+        "roughness": "Assets/Tripo/Textures/T_HeavyDropship_Roughness.png",
+        "metallic": "Assets/Tripo/Textures/T_HeavyDropship_Metallic.png",
+        "roughness_metallic": "Assets/Tripo/Textures/T_HeavyDropship_RoughnessMetallic.png"
+      },
+      "preview": "Assets/Tripo/Previews/HeavyDropship_sheet.png"
+    }
+  }
+}

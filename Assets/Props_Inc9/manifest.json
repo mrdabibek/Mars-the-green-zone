@@ -1,0 +1,581 @@
+{
+  "props_inc9": [
+    {
+      "fbx": "Assets/Props_Inc9/SM_Log_Terminal.fbx",
+      "vertices": 1328,
+      "polygons": 1232,
+      "uv_layers": 1,
+      "has_custom_normals": true,
+      "ue_size_cm": [
+        70.0,
+        60.0,
+        135.0
+      ],
+      "ue_min_cm": [
+        -35.0,
+        -30.0,
+        -0.0
+      ],
+      "ue_max_cm": [
+        35.0,
+        30.0,
+        135.0
+      ],
+      "material_slots": [
+        "M_Dev_Armor",
+        "M_Dev_MetalDark",
+        "M_Dev_Copper",
+        "M_EmissiveAccent"
+      ],
+      "name": "SM_Log_Terminal"
+    },
+    {
+      "fbx": "Assets/Props_Inc9/SM_Habitat_WallPanel.fbx",
+      "vertices": 1120,
+      "polygons": 1080,
+      "uv_layers": 1,
+      "has_custom_normals": true,
+      "ue_size_cm": [
+        100.0,
+        40.0,
+        300.0
+      ],
+      "ue_min_cm": [
+        -50.0,
+        -20.0,
+        -0.0
+      ],
+      "ue_max_cm": [
+        50.0,
+        20.0,
+        300.0
+      ],
+      "material_slots": [
+        "M_Habitat_Wall",
+        "M_Dev_MetalDark",
+        "M_EmissiveAccent"
+      ],
+      "name": "SM_Habitat_WallPanel"
+    },
+    {
+      "fbx": "Assets/Props_Inc9/SM_Habitat_FloorTile.fbx",
+      "vertices": 1512,
+      "polygons": 1458,
+      "uv_layers": 1,
+      "has_custom_normals": true,
+      "ue_size_cm": [
+        100.0,
+        100.0,
+        20.0
+      ],
+      "ue_min_cm": [
+        -50.0,
+        -50.0,
+        -0.0
+      ],
+      "ue_max_cm": [
+        50.0,
+        50.0,
+        20.0
+      ],
+      "material_slots": [
+        "M_Habitat_Floor",
+        "M_Dev_MetalDark"
+      ],
+      "name": "SM_Habitat_FloorTile"
+    },
+    {
+      "fbx": "Assets/Props_Inc9/SM_Greenhouse_GlassRoof.fbx",
+      "vertices": 624,
+      "polygons": 580,
+      "uv_layers": 1,
+      "has_custom_normals": true,
+      "ue_size_cm": [
+        100.0,
+        100.0,
+        20.0
+      ],
+      "ue_min_cm": [
+        -50.0,
+        -50.0,
+        -0.0
+      ],
+      "ue_max_cm": [
+        50.0,
+        50.0,
+        20.0
+      ],
+      "material_slots": [
+        "M_Dev_MetalDark",
+        "M_GlassRoof"
+      ],
+      "name": "SM_Greenhouse_GlassRoof"
+    },
+    {
+      "fbx": "Assets/Props_Inc9/SM_Mars_SolarArray.fbx",
+      "vertices": 3120,
+      "polygons": 2920,
+      "uv_layers": 1,
+      "has_custom_normals": true,
+      "ue_size_cm": [
+        220.0,
+        160.0,
+        280.0
+      ],
+      "ue_min_cm": [
+        -110.0,
+        -80.0,
+        -0.0
+      ],
+      "ue_max_cm": [
+        110.0,
+        80.0,
+        280.0
+      ],
+      "material_slots": [
+        "M_Dev_Armor",
+        "M_Dev_MetalDark",
+        "M_SolarCell",
+        "M_Dev_Copper",
+        "M_EmissiveAccent"
+      ],
+      "name": "SM_Mars_SolarArray"
+    },
+    {
+      "fbx": "Assets/Props_Inc9/SM_Mars_RoverWreck.fbx",
+      "vertices": 3354,
+      "polygons": 2962,
+      "uv_layers": 1,
+      "has_custom_normals": true,
+      "ue_size_cm": [
+        220.0,
+        150.0,
+        115.0
+      ],
+      "ue_min_cm": [
+        -110.0,
+        -75.0,
+        0.0
+      ],
+      "ue_max_cm": [
+        110.0,
+        75.0,
+        115.0
+      ],
+      "material_slots": [
+        "M_Dev_Armor",
+        "M_Dev_MetalDark",
+        "M_SolarCell",
+        "M_Dev_Copper",
+        "M_RegolithSoil",
+        "M_EmissiveAccent"
+      ],
+      "name": "SM_Mars_RoverWreck"
+    },
+    {
+      "fbx": "Assets/Props_Inc9/SM_Mars_TerrainSkirt.fbx",
+      "vertices": 6120,
+      "polygons": 5940,
+      "uv_layers": 1,
+      "has_custom_normals": true,
+      "ue_size_cm": [
+        80000.0,
+        80000.0,
+        3500.0
+      ],
+      "ue_min_cm": [
+        -40000.0,
+        -40000.0,
+        -0.0
+      ],
+      "ue_max_cm": [
+        40000.0,
+        40000.0,
+        3500.0
+      ],
+      "material_slots": [
+        "M_Mars_Ground",
+        "M_RegolithSoil"
+      ],
+      "name": "SM_Mars_TerrainSkirt"
+    },
+    {
+      "fbx": "Assets/Props_Inc9/SM_Mars_BasaltCliff.fbx",
+      "vertices": 392,
+      "polygons": 378,
+      "uv_layers": 1,
+      "has_custom_normals": true,
+      "ue_size_cm": [
+        900.0,
+        600.0,
+        850.0
+      ],
+      "ue_min_cm": [
+        -450.0,
+        -300.0,
+        -0.0
+      ],
+      "ue_max_cm": [
+        450.0,
+        300.0,
+        850.0
+      ],
+      "material_slots": [
+        "M_RegolithSoil",
+        "M_Mars_Ground"
+      ],
+      "name": "SM_Mars_BasaltCliff"
+    },
+    {
+      "fbx": "Assets/Props_Inc9/SM_Comms_DishTower.fbx",
+      "vertices": 1538,
+      "polygons": 1352,
+      "uv_layers": 1,
+      "has_custom_normals": true,
+      "ue_size_cm": [
+        320.0,
+        320.0,
+        620.0
+      ],
+      "ue_min_cm": [
+        -160.0,
+        -160.0,
+        -0.0
+      ],
+      "ue_max_cm": [
+        160.0,
+        160.0,
+        620.0
+      ],
+      "material_slots": [
+        "M_Dev_MetalDark",
+        "M_Dev_Armor",
+        "M_EmissiveAccent"
+      ],
+      "name": "SM_Comms_DishTower"
+    },
+    {
+      "fbx": "Assets/Props_Inc9/SM_Cryo_DrillRig.fbx",
+      "vertices": 2032,
+      "polygons": 1790,
+      "uv_layers": 1,
+      "has_custom_normals": true,
+      "ue_size_cm": [
+        420.0,
+        420.0,
+        680.0
+      ],
+      "ue_min_cm": [
+        -210.0,
+        -210.0,
+        -0.0
+      ],
+      "ue_max_cm": [
+        210.0,
+        210.0,
+        680.0
+      ],
+      "material_slots": [
+        "M_Dev_MetalDark",
+        "M_Dev_Armor",
+        "M_Dev_Copper",
+        "M_EmissiveAccent"
+      ],
+      "name": "SM_Cryo_DrillRig"
+    },
+    {
+      "fbx": "Assets/Props_Inc9/SM_Solar_DustRack.fbx",
+      "vertices": 620,
+      "polygons": 556,
+      "uv_layers": 1,
+      "has_custom_normals": true,
+      "ue_size_cm": [
+        240.0,
+        180.0,
+        190.0
+      ],
+      "ue_min_cm": [
+        -120.0,
+        -90.0,
+        -0.0
+      ],
+      "ue_max_cm": [
+        120.0,
+        90.0,
+        190.0
+      ],
+      "material_slots": [
+        "M_Dev_MetalDark",
+        "M_SolarCell",
+        "M_Dev_Copper",
+        "M_EmissiveAccent"
+      ],
+      "name": "SM_Solar_DustRack"
+    },
+    {
+      "fbx": "Assets/Props_Inc9/SM_CRISPR_Sequencer.fbx",
+      "vertices": 400,
+      "polygons": 340,
+      "uv_layers": 1,
+      "has_custom_normals": true,
+      "ue_size_cm": [
+        190.0,
+        130.0,
+        210.0
+      ],
+      "ue_min_cm": [
+        -95.0,
+        -65.0,
+        -0.0
+      ],
+      "ue_max_cm": [
+        95.0,
+        65.0,
+        210.0
+      ],
+      "material_slots": [
+        "M_Dev_Armor",
+        "M_Dev_MetalDark",
+        "M_GlassRoof",
+        "M_EmissiveAccent"
+      ],
+      "name": "SM_CRISPR_Sequencer"
+    },
+    {
+      "fbx": "Assets/Props_Inc9/SM_Sabatier_Reactor.fbx",
+      "vertices": 3032,
+      "polygons": 3008,
+      "uv_layers": 1,
+      "has_custom_normals": true,
+      "ue_size_cm": [
+        210.0,
+        130.0,
+        220.0
+      ],
+      "ue_min_cm": [
+        -105.0,
+        -65.0,
+        -0.0
+      ],
+      "ue_max_cm": [
+        105.0,
+        65.0,
+        220.0
+      ],
+      "material_slots": [
+        "M_Dev_Armor",
+        "M_Dev_MetalDark",
+        "M_Dev_Copper",
+        "M_EmissiveAccent"
+      ],
+      "name": "SM_Sabatier_Reactor"
+    }
+  ],
+  "materials": {
+    "M_Dev_Armor": {
+      "base_color": [
+        0.74,
+        0.72,
+        0.68,
+        1.0
+      ],
+      "metallic": 0.22,
+      "roughness": 0.42,
+      "emissive": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "emissive_strength": 0.0,
+      "is_emissive": false,
+      "noise_scale": 14.0,
+      "rough_var": 0.1
+    },
+    "M_Dev_MetalDark": {
+      "base_color": [
+        0.14,
+        0.15,
+        0.17,
+        1.0
+      ],
+      "metallic": 0.85,
+      "roughness": 0.36,
+      "emissive": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "emissive_strength": 0.0,
+      "is_emissive": false,
+      "noise_scale": 22.0,
+      "rough_var": 0.12
+    },
+    "M_Dev_Copper": {
+      "base_color": [
+        0.76,
+        0.42,
+        0.18,
+        1.0
+      ],
+      "metallic": 0.9,
+      "roughness": 0.28,
+      "emissive": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "emissive_strength": 0.0,
+      "is_emissive": false,
+      "noise_scale": 24.0,
+      "rough_var": 0.08
+    },
+    "M_EmissiveAccent": {
+      "base_color": [
+        0.06,
+        0.16,
+        0.2,
+        1.0
+      ],
+      "metallic": 0.1,
+      "roughness": 0.18,
+      "emissive": [
+        0.12,
+        0.78,
+        0.95,
+        1.0
+      ],
+      "emissive_strength": 2.2,
+      "is_emissive": true,
+      "noise_scale": 10.0,
+      "rough_var": 0.02
+    },
+    "M_Habitat_Wall": {
+      "base_color": [
+        0.28,
+        0.31,
+        0.35,
+        1.0
+      ],
+      "metallic": 0.35,
+      "roughness": 0.55,
+      "emissive": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "emissive_strength": 0.0,
+      "is_emissive": false,
+      "noise_scale": 16.0,
+      "rough_var": 0.08
+    },
+    "M_Habitat_Floor": {
+      "base_color": [
+        0.22,
+        0.24,
+        0.27,
+        1.0
+      ],
+      "metallic": 0.72,
+      "roughness": 0.44,
+      "emissive": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "emissive_strength": 0.0,
+      "is_emissive": false,
+      "noise_scale": 26.0,
+      "rough_var": 0.1
+    },
+    "M_GlassRoof": {
+      "base_color": [
+        0.42,
+        0.74,
+        0.88,
+        0.32
+      ],
+      "metallic": 0.05,
+      "roughness": 0.08,
+      "emissive": [
+        0.16,
+        0.32,
+        0.38,
+        1.0
+      ],
+      "emissive_strength": 0.35,
+      "is_emissive": false,
+      "is_translucent": true,
+      "opacity": 0.28,
+      "noise_scale": 8.0,
+      "rough_var": 0.02
+    },
+    "M_SolarCell": {
+      "base_color": [
+        0.09,
+        0.11,
+        0.15,
+        1.0
+      ],
+      "metallic": 0.42,
+      "roughness": 0.44,
+      "emissive": [
+        0.004,
+        0.014,
+        0.028,
+        1.0
+      ],
+      "emissive_strength": 0.06,
+      "is_emissive": false,
+      "noise_scale": 34.0,
+      "rough_var": 0.14
+    },
+    "M_Mars_Ground": {
+      "base_color": [
+        0.42,
+        0.19,
+        0.11,
+        1.0
+      ],
+      "metallic": 0.0,
+      "roughness": 0.92,
+      "emissive": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "emissive_strength": 0.0,
+      "is_emissive": false,
+      "noise_scale": 18.0,
+      "rough_var": 0.08
+    },
+    "M_RegolithSoil": {
+      "base_color": [
+        0.25,
+        0.12,
+        0.08,
+        1.0
+      ],
+      "metallic": 0.0,
+      "roughness": 0.94,
+      "emissive": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "emissive_strength": 0.0,
+      "is_emissive": false,
+      "noise_scale": 28.0,
+      "rough_var": 0.06
+    }
+  },
+  "previews": [
+    "Assets/Props_Inc9/Previews/Inc9_Props_sheet.png"
+  ]
+}

@@ -1,0 +1,44 @@
+# MARS: LAST GREEN — MASTER PROMPT FOR CLAUDE
+
+You are the gameplay and Unreal Engine engineer. Build a complete, polished, playable 30–60 minute single-player first-person vertical slice for Windows in Unreal Engine 5. The user owns creative direction. Codex handles 3D asset sourcing, design, animation and handoff; Claude owns implementation and integration. Do not claim another agent completed work unless verified. Before editing inspect the actual project, local instructions, engine availability and existing files; coordinate through `Docs/ASSET_CONTRACT.md` and `Docs/PROGRESS.md`. Preserve other contributors' changes. If no project exists, create a clean C++ UE5 project when an engine is available; never delete or restore the old Lunarix project. Verify actual UE version and build tools before making compatibility claims.
+
+## Creative vision
+Realistic, tense sci-fi survival FPS. English UI and dialogue. Age target 12+: exciting, responsive military-style shooting, no gore, dismemberment or graphic alien suffering. Do not copy Call of Duty assets, sounds, names or distinctive content. The challenge is to protect a fragile ecosystem, not only the player.
+
+A lone Mars researcher witnesses an unexplained catastrophe on Earth and loses contact. Earth’s disappearance is a fictional story event, not a scientific prediction about climate. Seeds, water and research become humanity's remaining legacy. Alien attackers deliberately destroy crops, water infrastructure and life support. The player's goal is to keep the greenhouse and seed reserve alive long enough to secure the research and transmit a distress signal; the fate of humanity is left uncertain. Theme: appreciate and protect Earth's atmosphere, water and ecosystems.
+
+## Scope and story beats
+Target 30–60 minutes on first play without padding. Design for a single cohesive Mars base, a small surrounding traversable area, one greenhouse, a water extraction point and a communications site. Time targets below are design estimates to validate by playtesting:
+1. Arrival, Earth event, safe introduction to movement and interactions (3–5 minutes).
+2. Repair oxygen and power; plant first seeds (5–10 minutes).
+3. Make an excursion for ice and water-filter parts while managing suit oxygen (8–12 minutes).
+4. First readable alien attacks on the greenhouse and water system (5–10 minutes).
+5. Reach and repair the comms unit; recover a seed-bank backup (8–12 minutes).
+6. Defend habitat, secure seeds and transmit the message, followed by a results screen (7–11 minutes).
+Provide in-game objectives, concise dialogue, optional environmental logs and save/checkpoints. No cutscene should force the player to lose an objective. Tune only after observing actual gameplay time.
+
+## Gameplay requirements
+- First-person movement, sprint, crouch, interact, aim, fire and reload; accessible remappable inputs, sensitivity and audio settings. Create original sci-fi weapon(s) with readable feedback: recoil, timing, animation, audio and hit reactions. No gore. Combat should feel responsive and satisfying.
+- Pressurized habitat and greenhouse, oxygen outside, energy, water, seeds, plant health, health and ammunition. Present clear HUD indicators, low-resource alerts and objective markers. Resources pause or evolve under clear rules. Prevent softlocks: give limited but reliable recovery routes and communicate irreversible loss in advance.
+- Greenhouse plants have seed, seedling and mature stages. They require water, power and a functioning pressurized environment. An interruption visibly slows/stops growth, followed by recovery when repaired. Use accelerated gameplay time, not misleading real-time scientific claims. A few plants do not terraform Mars.
+- Ice extraction, water purification and closed-loop water management are simplified educational models, not real engineering simulations. Expose resource transfers and costs to players. Provide repair interactions with enough feedback to understand their duration and interruption.
+- Aliens choose reachable meaningful targets: water tanks/pipes, greenhouse equipment, plants, then player as circumstances require. Three readable archetypes: fast pipe-raider, slow telegraphed infrastructure-breaker, and distraction/flanking enemy. Avoid omniscience, unfair spawning, instant attacks or damaging the only objective without warning. Signal threats with animation, directional sound and HUD; use navigation appropriate to actual level. Provide fair adaptive pacing and a difficulty setting.
+- Win only if the player secures at least one viable seed reserve and transmits the research after the final attack. Lose on player death or permanent destruction of all viable seeds and recovery options; make conditions visible. Give meaningful debrief showing seeds saved, water used, repairs and research transmitted; no claim Earth is restored.
+- Make a mission planning step meaningful: choose a limited kit, balance weight, power, scientific value and defense, and see consequences. Include mission planning, execution and debrief for the Space Mission Design Game direction. Verify the exact official challenge requirements separately: the survival concept alone does not establish compliance.
+
+## Scientific treatment
+Mars has a thin atmosphere, mostly CO2; long-lived liquid water on its open surface is unstable. Growing crops in Martian regolith is difficult due to nutrient limitations and perchlorates. Use NASA public data and accurately cited materials where appropriate; label fictional/simplified mechanics and extraterrestrial enemies clearly in an optional accessible science codex. Do not suggest Earth will disappear due to air pollution, or that a handful of crops produces a breathable planetary atmosphere.
+Sources: https://science.nasa.gov/mars/facts/ ; https://www.nasa.gov/science-research/nasa-plant-researchers-explore-question-of-deep-space-food-crops/ .
+
+## Architecture and collaboration
+Implement maintainable, complete code with Blueprint-exposed parameters where appropriate: player and input, weapon, interaction, resource simulation, greenhouse/plant, repairable objectives, enemy AI and target selection, wave/director, mission state, save/checkpoints, HUD, audio and settings. Respect Unreal's lifecycle, collision, ownership and save semantics. No multiplayer unless separately requested. Preserve behavior under pause, checkpoint reload and mission state changes. Avoid asset dependency crashes; prototypes may use explicit temporary primitives, but must be identified as such and replaced when validated assets arrive.
+
+Codex supplies assets separately. Specify for each asset: descriptive ID, intended visual, scale in cm, axis, pivot, collision, static or skeletal, rig and bone naming, animation list, texture sets, expected budget and license/source metadata. Coordinate file ownership and write integration status. Required categories: first-person gloved arms (idle, movement, aim, fire, reload, interact), weapon, astronaut reference, three readable alien types (idle, move, attack, hit, death), greenhouse and three plant stages, water tanks/pipes/purifier, habitat modular pieces, ice and Mars rocks, communicators, pickups, effects and audio. Do not assume a downloaded static model is rigged or game-ready. Respect external licenses and NASA media/insignia rules.
+
+## Execution and verification
+Work in increments: (1) bootable project and FPS interaction; (2) resource loop and plant growth; (3) one complete enemy and objective damage/repair; (4) story progression and checkpoint; (5) remaining AI and asset integration; (6) polish and packaged Windows build where toolchain exists. For each, run available tests, compile and playtest real workflows; investigate failures. Test plant starvation/recovery, tank damage and repair, AI target change, finite resource recovery, seed loss, save/load mid-attack and both end states. Inspect art in-engine for scale, pivots, collisions, lighting, rig and animations. Record exactly what was built and tested, and report missing engine, Windows packaging toolchain, assets or untested performance honestly. Do not describe a build as complete if it was not run. User can review progress without needing to read chat history.
+
+## User decisions — authoritative
+- Enemies include both fast animal-like creatures and intelligent armed attackers. The former pursue vulnerable plants or pipes; the latter use readable tactics, cover and diversion. Both must give clear warnings and counterplay; no gore.
+- The player repairs an existing base and places a small, predefined set of defensive items at marked locations. No freeform base building in this demo. Limit choices to reduce complexity while retaining meaningful trade-offs.
+- After the successful transmission a mysterious reply arrives. Do not confirm its origin or whether Earth or other humans survived; preserve a hopeful cliffhanger.

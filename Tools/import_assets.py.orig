@@ -1,0 +1,495 @@
+"""Import Environment, Audio, FirstPerson, and Creature assets into Unreal Engine 5.2.
+
+Run via:
+  UnrealEditor-Cmd "<project>/MarsLastGreen.uproject" \
+    -ExecutePythonScript="<project>/Tools/import_assets.py" \
+    -nullrhi -unattended -nop4
+"""
+
+import os
+import sys
+import unreal
+
+PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+ASSETS_DIR = os.path.join(PROJECT_ROOT, "Assets")
+CONTENT_DIR = os.path.join(PROJECT_ROOT, "Content")
+
+ASSET_TOOLS = unreal.AssetToolsHelpers.get_asset_tools()
+EAL = unreal.EditorAssetLibrary
+MEL = unreal.MaterialEditingLibrary
+
+
+def log(msg):
+    unreal.log("MLG_IMPORT: " + str(msg))
+
+
+def warn(msg):
+    unreal.log_warning("MLG_IMPORT: " + str(msg))
+
+
+def make_task(filename, dest_path, dest_name=None, options=None, replace=True):
+    task = unreal.AssetImportTask()
+    task.filename = filename
+    task.destination_path = dest_path
+    if dest_name:
+        task.destination_name = dest_name
+    task.automated = True
+    task.replace_existing = replace
+    task.replace_existing_settings = True
+    task.save = True
+    if options is not None:
+        task.options = options
+    return task
+
+
+def import_texture(filepath, dest_path, dest_name, kind="color"):
+    if not os.path.isfile(filepath):
+        warn(f"Missing texture: {filepath}")
+        return None
+    pkg = f"{dest_path}/{dest_name}"
+    src_stem = os.path.splitext(os.path.basename(filepath))[0]
+    src_pkg = f"{dest_path}/{src_stem}"
+
+    tex = EAL.load_asset(pkg) if EAL.does_asset_exist(pkg) else None
+    if not tex:
+        if EAL.does_asset_exist(src_pkg):
+            tex = EAL.load_asset(src_pkg)
+        else:
+            task = make_task(filepath, dest_path, dest_name)
+            ASSET_TOOLS.import_asset_tasks([task])
+            imported = list(task.get_editor_property("imported_object_paths") or [])
+            if imported:
+                tex = unreal.load_object(None, str(imported[0]))
+            if not tex and EAL.does_asset_exist(pkg):
+                tex = EAL.load_asset(pkg)
+            if not tex and EAL.does_asset_exist(src_pkg):
+                tex = EAL.load_asset(src_pkg)
+        if tex:
+            cur_pkg = tex.get_path_name().split(".")[0]
+            if cur_pkg != pkg and not EAL.does_asset_exist(pkg):
+                if EAL.rename_asset(cur_pkg, pkg):
+                    tex = EAL.load_asset(pkg) if EAL.does_asset_exist(pkg) else unreal.load_object(None, f"{pkg}.{dest_name}")
+                    # Remove redirector if any left at cur_pkg
+                    if EAL.does_asset_exist(cur_pkg):
+                        old_obj = EAL.load_asset(cur_pkg)
+                        if old_obj and old_obj.get_class().get_name() == "ObjectRedirector":
+                            EAL.delete_asset(cur_pkg)
+
+    if not tex:
+        warn(f"Failed to load imported texture {pkg}")
+        return None
+    if kind == "normal_gl":
+        tex.set_editor_property("compression_settings", unreal.TextureCompressionSettings.TC_NORMALMAP)
+        tex.set_editor_property("srgb", False)
+        tex.set_editor_property("flip_green_channel", True)
+    elif kind == "normal_dx":
+        tex.set_editor_property("compression_settings", unreal.TextureCompressionSettings.TC_NORMALMAP)
+        tex.set_editor_property("srgb", False)
+        tex.set_editor_property("flip_green_channel", False)
+    elif kind == "linear":
+        tex.set_editor_property("compression_settings", unreal.TextureCompressionSettings.TC_GRAYSCALE)
+        tex.set_editor_property("srgb", False)
+    else:
+        tex.set_editor_property("compression_settings", unreal.TextureCompressionSettings.TC_DEFAULT)
+        tex.set_editor_property("srgb", True)
+    EAL.save_asset(tex.get_path_name().split(".")[0], only_if_is_dirty=False)
+    return tex
+
+
+def build_pbr_material(mat_pkg_path, base_tex=None, normal_tex=None, rough_tex=None,
+                       alpha_tex=None, tint=None, two_sided=False, roughness_scalar=None,
+                       emissive_param=None):
+    mat_dir, mat_name = mat_pkg_path.rsplit("/", 1)
+    if EAL.does_asset_exist(mat_pkg_path):
+        mat = EAL.load_asset(mat_pkg_path)
+    else:
+        mat = ASSET_TOOLS.create_asset(mat_name, mat_dir, unreal.Material, unreal.MaterialFactoryNew())
+    if not mat:
+        warn(f"Could not create material {mat_pkg_path}")
+        return None
+
+    MEL.delete_all_material_expressions(mat)
+    mat.set_editor_property("two_sided", two_sided)
+    if alpha_tex is not None:
+        mat.set_editor_property("blend_mode", unreal.BlendMode.BLEND_MASKED)
+    else:
+        mat.set_editor_property("blend_mode", unreal.BlendMode.BLEND_OPAQUE)
+
+    if base_tex is not None:
+        base_sample = MEL.create_material_expression(mat, unreal.MaterialExpressionTextureSample, -420, -240)
+        base_sample.texture = base_tex
+        base_sample.sampler_type = unreal.MaterialSamplerType.SAMPLERTYPE_COLOR
+        if tint is not None:
+            const_tint = MEL.create_material_expression(mat, unreal.MaterialExpressionConstant3Vector, -420, -40)
+            const_tint.constant = unreal.LinearColor(tint[0], tint[1], tint[2], 1.0)
+            mul = MEL.create_material_expression(mat, unreal.MaterialExpressionMultiply, -180, -180)
+            MEL.connect_material_expressions(base_sample, "RGB", mul, "A")
+            MEL.connect_material_expressions(const_tint, "", mul, "B")
+            MEL.connect_material_property(mul, "", unreal.MaterialProperty.MP_BASE_COLOR)
+        else:
+            MEL.connect_material_property(base_sample, "RGB", unreal.MaterialProperty.MP_BASE_COLOR)
+
+    if rough_tex is not None:
+        rough_sample = MEL.create_material_expression(mat, unreal.MaterialExpressionTextureSample, -420, 140)
+        rough_sample.texture = rough_tex
+        rough_sample.sampler_type = unreal.MaterialSamplerType.SAMPLERTYPE_LINEAR_GRAYSCALE
+        MEL.connect_material_property(rough_sample, "R", unreal.MaterialProperty.MP_ROUGHNESS)
+    elif roughness_scalar is not None:
+        rough_const = MEL.create_material_expression(mat, unreal.MaterialExpressionConstant, -220, 140)
+        rough_const.r = float(roughness_scalar)
+        MEL.connect_material_property(rough_const, "", unreal.MaterialProperty.MP_ROUGHNESS)
+
+    if normal_tex is not None:
+        norm_sample = MEL.create_material_expression(mat, unreal.MaterialExpressionTextureSample, -420, 340)
+        norm_sample.texture = normal_tex
+        norm_sample.sampler_type = unreal.MaterialSamplerType.SAMPLERTYPE_NORMAL
+        MEL.connect_material_property(norm_sample, "RGB", unreal.MaterialProperty.MP_NORMAL)
+
+    if alpha_tex is not None:
+        alpha_sample = MEL.create_material_expression(mat, unreal.MaterialExpressionTextureSample, -420, 540)
+        alpha_sample.texture = alpha_tex
+        alpha_sample.sampler_type = unreal.MaterialSamplerType.SAMPLERTYPE_LINEAR_GRAYSCALE
+        MEL.connect_material_property(alpha_sample, "R", unreal.MaterialProperty.MP_OPACITY_MASK)
+
+    if emissive_param:
+        em_node = MEL.create_material_expression(mat, unreal.MaterialExpressionVectorParameter, -260, 700)
+        em_node.set_editor_property("parameter_name", emissive_param)
+        em_node.set_editor_property("default_value", unreal.LinearColor(0.0, 0.0, 0.0, 1.0))
+        MEL.connect_material_property(em_node, "RGB", unreal.MaterialProperty.MP_EMISSIVE_COLOR)
+
+    MEL.recompile_material(mat)
+    EAL.save_asset(mat_pkg_path, only_if_is_dirty=False)
+    return mat
+
+
+def import_static_fbx(fbx_path, dest_path, dest_name):
+    if not os.path.isfile(fbx_path):
+        warn(f"Missing static FBX: {fbx_path}")
+        return None
+    opts = unreal.FbxImportUI()
+    opts.import_mesh = True
+    opts.import_as_skeletal = False
+    opts.import_animations = False
+    opts.import_materials = False
+    opts.import_textures = False
+    opts.automated_import_should_detect_type = False
+    opts.mesh_type_to_import = unreal.FBXImportType.FBXIT_STATIC_MESH
+
+    sm_data = opts.static_mesh_import_data
+    sm_data.combine_meshes = True
+    sm_data.auto_generate_collision = True
+    sm_data.generate_lightmap_u_vs = True
+    sm_data.normal_import_method = unreal.FBXNormalImportMethod.FBXNIM_IMPORT_NORMALS
+
+    task = make_task(fbx_path, dest_path, dest_name, options=opts)
+    ASSET_TOOLS.import_asset_tasks([task])
+    pkg = f"{dest_path}/{dest_name}"
+    sm = EAL.load_asset(pkg)
+    if sm:
+        bounds = sm.get_bounding_box()
+        ext = bounds.max - bounds.min
+        log(f"Imported StaticMesh {pkg} size=({ext.x:.1f}, {ext.y:.1f}, {ext.z:.1f}) cm")
+    else:
+        warn(f"Failed to load StaticMesh {pkg}")
+    return sm
+
+
+def import_environment():
+    log("=== Importing PolyHaven Environment Assets ===")
+    tex_dest = "/Game/Environment/Textures"
+    mat_dest = "/Game/Environment/Materials"
+    mesh_dest = "/Game/Environment"
+
+    # Moon Rock 01 -> Mars Rock 01
+    r1_dir = os.path.join(ASSETS_DIR, "PolyHaven", "moon_rock_01")
+    r1_diff = import_texture(os.path.join(r1_dir, "textures", "moon_rock_01_diff_2k.jpg"), tex_dest, "T_MarsRock_01_D", "color")
+    r1_nor = import_texture(os.path.join(r1_dir, "textures", "moon_rock_01_nor_gl_2k.exr"), tex_dest, "T_MarsRock_01_N", "normal_gl")
+    r1_rgh = import_texture(os.path.join(r1_dir, "textures", "moon_rock_01_rough_2k.exr"), tex_dest, "T_MarsRock_01_R", "linear")
+    m_r1 = build_pbr_material(f"{mat_dest}/M_MarsRock_01", r1_diff, r1_nor, r1_rgh, tint=(0.68, 0.28, 0.14))
+    sm_r1 = import_static_fbx(os.path.join(r1_dir, "moon_rock_01_2k.fbx"), mesh_dest, "SM_MarsRock_01")
+    if sm_r1 and m_r1:
+        for i in range(sm_r1.get_num_sections(0)):
+            sm_r1.set_material(i, m_r1)
+        EAL.save_asset(f"{mesh_dest}/SM_MarsRock_01", only_if_is_dirty=False)
+
+    # Moon Rock 02 -> Mars Rock 02
+    r2_dir = os.path.join(ASSETS_DIR, "PolyHaven", "moon_rock_02")
+    r2_diff = import_texture(os.path.join(r2_dir, "textures", "moon_rock_02_diff_2k.jpg"), tex_dest, "T_MarsRock_02_D", "color")
+    r2_nor = import_texture(os.path.join(r2_dir, "textures", "moon_rock_02_nor_gl_2k.exr"), tex_dest, "T_MarsRock_02_N", "normal_gl")
+    r2_rgh = import_texture(os.path.join(r2_dir, "textures", "moon_rock_02_rough_2k.exr"), tex_dest, "T_MarsRock_02_R", "linear")
+    m_r2 = build_pbr_material(f"{mat_dest}/M_MarsRock_02", r2_diff, r2_nor, r2_rgh, tint=(0.65, 0.26, 0.13))
+    sm_r2 = import_static_fbx(os.path.join(r2_dir, "moon_rock_02_2k.fbx"), mesh_dest, "SM_MarsRock_02")
+    if sm_r2 and m_r2:
+        for i in range(sm_r2.get_num_sections(0)):
+            sm_r2.set_material(i, m_r2)
+        EAL.save_asset(f"{mesh_dest}/SM_MarsRock_02", only_if_is_dirty=False)
+
+    # Potted Plant 02 -> SM_Plant_Mature_02
+    p2_dir = os.path.join(ASSETS_DIR, "PolyHaven", "potted_plant_02")
+    p2_l_diff = import_texture(os.path.join(p2_dir, "textures", "potted_plant_02_leaves_diff_2k.png"), tex_dest, "T_Plant_02_Leaves_D", "color")
+    p2_l_nor = import_texture(os.path.join(p2_dir, "textures", "potted_plant_02_leaves_nor_gl_2k.png"), tex_dest, "T_Plant_02_Leaves_N", "normal_gl")
+    p2_l_rgh = import_texture(os.path.join(p2_dir, "textures", "potted_plant_02_leaves_rough_2k.png"), tex_dest, "T_Plant_02_Leaves_R", "linear")
+    p2_l_alp = import_texture(os.path.join(p2_dir, "textures", "potted_plant_02_leaves_alpha_2k.png"), tex_dest, "T_Plant_02_Leaves_A", "linear")
+    p2_p_diff = import_texture(os.path.join(p2_dir, "textures", "potted_plant_02_pot_diff_2k.png"), tex_dest, "T_Plant_02_Pot_D", "color")
+    p2_p_nor = import_texture(os.path.join(p2_dir, "textures", "potted_plant_02_pot_nor_gl_2k.png"), tex_dest, "T_Plant_02_Pot_N", "normal_gl")
+    p2_p_rgh = import_texture(os.path.join(p2_dir, "textures", "potted_plant_02_pot_rough_2k.png"), tex_dest, "T_Plant_02_Pot_R", "linear")
+    m_p2_leaves = build_pbr_material(f"{mat_dest}/M_Plant_02_Leaves", p2_l_diff, p2_l_nor, p2_l_rgh, alpha_tex=p2_l_alp, two_sided=True)
+    m_p2_pot = build_pbr_material(f"{mat_dest}/M_Plant_02_Pot", p2_p_diff, p2_p_nor, p2_p_rgh)
+    sm_p2 = import_static_fbx(os.path.join(p2_dir, "potted_plant_02_2k.fbx"), mesh_dest, "SM_Plant_Mature_02")
+    if sm_p2:
+        for idx, sm_mat in enumerate(sm_p2.static_materials):
+            slot = str(sm_mat.material_slot_name).lower()
+            log(f"  SM_Plant_Mature_02 slot {idx}: {slot}")
+            if "leaves" in slot:
+                sm_p2.set_material(idx, m_p2_leaves)
+            else:
+                sm_p2.set_material(idx, m_p2_pot)
+        EAL.save_asset(f"{mesh_dest}/SM_Plant_Mature_02", only_if_is_dirty=False)
+
+    # Potted Plant 04 -> SM_Plant_Mature_04
+    p4_dir = os.path.join(ASSETS_DIR, "PolyHaven", "potted_plant_04")
+    p4_diff = import_texture(os.path.join(p4_dir, "textures", "potted_plant_04_diff_2k.jpg"), tex_dest, "T_Plant_04_D", "color")
+    p4_nor = import_texture(os.path.join(p4_dir, "textures", "potted_plant_04_nor_gl_2k.exr"), tex_dest, "T_Plant_04_N", "normal_gl")
+    p4_rgh = import_texture(os.path.join(p4_dir, "textures", "potted_plant_04_rough_2k.exr"), tex_dest, "T_Plant_04_R", "linear")
+    m_p4 = build_pbr_material(f"{mat_dest}/M_Plant_04", p4_diff, p4_nor, p4_rgh, two_sided=True)
+    sm_p4 = import_static_fbx(os.path.join(p4_dir, "potted_plant_04_2k.fbx"), mesh_dest, "SM_Plant_Mature_04")
+    if sm_p4 and m_p4:
+        for idx, sm_mat in enumerate(sm_p4.static_materials):
+            log(f"  SM_Plant_Mature_04 slot {idx}: {sm_mat.material_slot_name}")
+            sm_p4.set_material(idx, m_p4)
+        EAL.save_asset(f"{mesh_dest}/SM_Plant_Mature_04", only_if_is_dirty=False)
+
+    # Optional NASA Reference FBXs exported by @anim_blender
+    ref_export_dir = os.path.join(ASSETS_DIR, "References", "Export_FBX")
+    if os.path.isdir(ref_export_dir):
+        ref_tex_dest = "/Game/Environment/References/Textures"
+        ref_mat_dest = "/Game/Environment/References/Materials"
+        ref_tex_dir = os.path.join(ref_export_dir, "Textures")
+
+        h1_tex = import_texture(os.path.join(ref_tex_dir, "SM_NASA_Habitat_Part1_HDU_01.png"), ref_tex_dest, "T_NASA_Habitat_Part1_D", "color")
+        h2_tex = import_texture(os.path.join(ref_tex_dir, "SM_NASA_Habitat_Part2_HDU_02.png"), ref_tex_dest, "T_NASA_Habitat_Part2_D", "color")
+        z2_tex = import_texture(os.path.join(ref_tex_dir, "SM_NASA_Z2_Spacesuit_z2_Color_s.png"), ref_tex_dest, "T_NASA_Z2_Spacesuit_D", "color")
+        z2_spec = import_texture(os.path.join(ref_tex_dir, "SM_NASA_Z2_Spacesuit_z2_spec_color_s.png"), ref_tex_dest, "T_NASA_Z2_Spacesuit_S", "linear")
+
+        ref_mats = {
+            "SM_NASA_Habitat_Part1": build_pbr_material(f"{ref_mat_dest}/M_NASA_Habitat_Part1", base_tex=h1_tex, roughness_scalar=0.55),
+            "SM_NASA_Habitat_Part2": build_pbr_material(f"{ref_mat_dest}/M_NASA_Habitat_Part2", base_tex=h2_tex, roughness_scalar=0.55),
+            "SM_NASA_Z2_Spacesuit": build_pbr_material(f"{ref_mat_dest}/M_NASA_Z2_Spacesuit", base_tex=z2_tex, rough_tex=z2_spec),
+        }
+
+        for fn in sorted(os.listdir(ref_export_dir)):
+            if fn.lower().endswith(".fbx"):
+                stem = os.path.splitext(fn)[0]
+                sm_ref = import_static_fbx(os.path.join(ref_export_dir, fn), "/Game/Environment/References", stem)
+                mat_ref = ref_mats.get(stem)
+                if sm_ref and mat_ref:
+                    for idx in range(len(sm_ref.static_materials)):
+                        sm_ref.set_material(idx, mat_ref)
+                    EAL.save_asset(f"/Game/Environment/References/{stem}", only_if_is_dirty=False)
+                    log(f"Wired material onto /Game/Environment/References/{stem}")
+
+
+def import_audio():
+    log("=== Importing 48kHz Audio Assets ===")
+    audio_dir = os.path.join(ASSETS_DIR, "Audio")
+    if not os.path.isdir(audio_dir):
+        warn("Assets/Audio directory not found")
+        return
+    dest_path = "/Game/Audio"
+    wavs = sorted(f for f in os.listdir(audio_dir) if f.lower().endswith(".wav"))
+    for fn in wavs:
+        stem = os.path.splitext(fn)[0]
+        task = make_task(os.path.join(audio_dir, fn), dest_path, stem)
+        ASSET_TOOLS.import_asset_tasks([task])
+        pkg = f"{dest_path}/{stem}"
+        sw = EAL.load_asset(pkg)
+        if sw:
+            if "loop" in stem.lower():
+                try:
+                    sw.set_editor_property("looping", True)
+                    EAL.save_asset(pkg, only_if_is_dirty=False)
+                    log(f"Imported SoundWave {pkg} (dur={sw.duration:.3f}s, looping=True)")
+                except Exception as exc:
+                    warn(f"Could not set looping on {pkg}: {exc}")
+            else:
+                EAL.save_asset(pkg, only_if_is_dirty=False)
+                log(f"Imported SoundWave {pkg} (dur={sw.duration:.3f}s)")
+        else:
+            warn(f"Failed to load SoundWave {pkg}")
+
+
+def organize_first_person():
+    log("=== Verifying FirstPersonArms & FPWeapon Template Assets ===")
+    for broken in [
+        "/Game/FirstPersonArms/Animations/FirstPerson_AnimBP",
+        "/Game/FirstPersonArms/Animations/FP_Rifle_Shoot_Montage",
+        "/Game/FPWeapon/Audio/FirstPersonTemplateWeaponFire02",
+        "/Game/FPWeapon/Materials/FirstPersonProjectileMaterial",
+        "/Game/FPWeapon/Mesh/FirstPersonProjectileMesh",
+    ]:
+        if EAL.does_asset_exist(broken):
+            EAL.delete_asset(broken)
+            log(f"Deleted broken/unused template asset: {broken}")
+
+    for expected in [
+        "/Game/FirstPersonArms/Character/Mesh/SK_Mannequin_Arms",
+        "/Game/FirstPersonArms/Animations/FP_Rifle_Idle",
+        "/Game/FirstPersonArms/Animations/FP_Rifle_Run",
+        "/Game/FirstPersonArms/Animations/FP_Rifle_Fire",
+        "/Game/FirstPersonArms/Animations/FP_Idle",
+        "/Game/FirstPersonArms/Animations/FP_Walk_Fwd",
+        "/Game/FirstPersonArms/Animations/FP_Run_Fwd",
+        "/Game/FPWeapon/Mesh/SK_FPGun",
+        "/Game/FPWeapon/Materials/M_FPGun",
+    ]:
+        obj = EAL.load_asset(expected) if EAL.does_asset_exist(expected) else None
+        log(f"Verify FirstPerson {expected}: {'OK (' + obj.get_class().get_name() + ')' if obj else 'MISSING'}")
+
+
+def import_creatures():
+    log("=== Checking Production Creatures ===")
+    prod_dir = os.path.join(ASSETS_DIR, "Creatures", "Production")
+    for kind in ["Raider", "Breaker", "Gunner"]:
+        kdir = os.path.join(prod_dir, kind)
+        sk_fbx = os.path.join(kdir, f"SK_Alien_{kind}.fbx")
+        if not os.path.isfile(sk_fbx):
+            log(f"Skipping {kind}: {sk_fbx} not present yet")
+            continue
+
+        dest = f"/Game/Creatures/{kind}"
+        tex_dest = f"{dest}/Textures"
+        mat_dest = f"{dest}/Materials"
+
+        # Import Skeletal Mesh
+        opts = unreal.FbxImportUI()
+        opts.import_mesh = True
+        opts.import_as_skeletal = True
+        opts.import_animations = False
+        opts.import_materials = True
+        opts.import_textures = True
+        opts.automated_import_should_detect_type = False
+        opts.mesh_type_to_import = unreal.FBXImportType.FBXIT_SKELETAL_MESH
+        opts.skeletal_mesh_import_data.convert_scene = True
+        opts.skeletal_mesh_import_data.force_front_x_axis = False
+        opts.skeletal_mesh_import_data.normal_import_method = unreal.FBXNormalImportMethod.FBXNIM_IMPORT_NORMALS
+
+        task = make_task(sk_fbx, dest, f"SK_Alien_{kind}", options=opts)
+        ASSET_TOOLS.import_asset_tasks([task])
+
+        sk_pkg = f"{dest}/SK_Alien_{kind}"
+        sk_mesh = EAL.load_asset(sk_pkg)
+        if not sk_mesh:
+            warn(f"Failed to import skeletal mesh {sk_pkg}")
+            continue
+        skel = sk_mesh.skeleton
+        phys = sk_mesh.physics_asset
+        bounds = sk_mesh.get_bounds().box_extent * 2.0
+        log(f"Imported {sk_pkg} size=({bounds.x:.1f}, {bounds.y:.1f}, {bounds.z:.1f}) cm skeleton={skel.get_path_name() if skel else None}")
+
+        # Look for co-located basecolor and normal textures to wire explicit PBR material
+        base_tex_file = None
+        norm_tex_file = None
+        norm_kind = "normal_gl"
+        for root, _, files in os.walk(kdir):
+            for fn in sorted(files):
+                low = fn.lower()
+                if not low.endswith((".png", ".jpg", ".jpeg", ".tga", ".exr")):
+                    continue
+                if "preview" in low or "sheet" in low:
+                    continue
+                full = os.path.join(root, fn)
+                if ("basecolor" in low or "albedo" in low or "diff" in low) and base_tex_file is None:
+                    base_tex_file = full
+                elif ("normal" in low or "_nor" in low) and norm_tex_file is None:
+                    norm_tex_file = full
+                    if "_dx" in low:
+                        norm_kind = "normal_dx"
+
+        if base_tex_file or norm_tex_file:
+            b_tex = import_texture(base_tex_file, tex_dest, f"T_Alien_{kind}_D", "color") if base_tex_file else None
+            n_tex = import_texture(norm_tex_file, tex_dest, f"T_Alien_{kind}_N", norm_kind) if norm_tex_file else None
+            mat = build_pbr_material(
+                f"{mat_dest}/M_Alien_{kind}",
+                base_tex=b_tex,
+                normal_tex=n_tex,
+                roughness_scalar=0.65,
+                emissive_param="EmissiveColor",
+            )
+            if mat:
+                new_mats = []
+                for idx, old_sm in enumerate(sk_mesh.get_editor_property("materials")):
+                    sm_copy = old_sm.copy()
+                    slot_name = str(sm_copy.material_slot_name).lower()
+                    log(f"  {kind} mat slot {idx}: {slot_name}")
+                    # Preserve Gunner's rifle/core weapon materials while wiring the creature body slot
+                    if "rifle" in slot_name or "weapon" in slot_name or "core" in slot_name:
+                        if sm_copy.material_interface:
+                            EAL.save_asset(sm_copy.material_interface.get_path_name().split(".")[0], only_if_is_dirty=False)
+                        new_mats.append(sm_copy)
+                        continue
+                    sm_copy.set_editor_property("material_interface", mat)
+                    new_mats.append(sm_copy)
+                sk_mesh.modify()
+                sk_mesh.set_editor_property("materials", new_mats)
+                log(f"Wired M_Alien_{kind} onto {sk_pkg}")
+
+        # Save SkeletalMesh and its auto-generated Skeleton / PhysicsAsset / Materials to disk
+        for sub_obj in [sk_mesh, skel, phys]:
+            if sub_obj:
+                EAL.save_asset(sub_obj.get_path_name().split(".")[0], only_if_is_dirty=False)
+        unreal.EditorLoadingAndSavingUtils.save_dirty_packages(True, True)
+
+        # Import AnimSequences
+        for fn in sorted(os.listdir(kdir)):
+            if not fn.lower().endswith(".fbx"):
+                continue
+            stem = os.path.splitext(fn)[0]
+            if not stem.startswith(f"AS_{kind}_"):
+                continue
+            a_opts = unreal.FbxImportUI()
+            a_opts.import_mesh = False
+            a_opts.import_as_skeletal = True
+            a_opts.import_animations = True
+            a_opts.import_materials = False
+            a_opts.import_textures = False
+            a_opts.automated_import_should_detect_type = False
+            a_opts.mesh_type_to_import = unreal.FBXImportType.FBXIT_ANIMATION
+            a_opts.skeleton = skel
+            a_opts.anim_sequence_import_data.convert_scene = True
+            a_opts.anim_sequence_import_data.force_front_x_axis = False
+            for prop, val in [
+                ("import_meshes_in_bone_hierarchy", False),
+                ("animation_length", unreal.FBXAnimationLengthImportType.FBXALIT_EXPORTED_TIME),
+                ("remove_redundant_keys", False),
+            ]:
+                try:
+                    a_opts.anim_sequence_import_data.set_editor_property(prop, val)
+                except Exception:
+                    pass
+
+            a_task = make_task(os.path.join(kdir, fn), dest, stem, options=a_opts)
+            ASSET_TOOLS.import_asset_tasks([a_task])
+            a_pkg = f"{dest}/{stem}"
+            anim = EAL.load_asset(a_pkg)
+            if anim:
+                log(f"Imported AnimSequence {a_pkg} play_len={anim.get_play_length():.3f}s")
+            else:
+                warn(f"Failed to import AnimSequence {a_pkg}")
+
+
+def main():
+    if "--audio-only" in sys.argv:
+        import_audio()
+        unreal.EditorLoadingAndSavingUtils.save_dirty_packages(True, True)
+        log("=== Audio Import Pass Complete ===")
+        return
+    import_environment()
+    import_audio()
+    organize_first_person()
+    import_creatures()
+    unreal.EditorLoadingAndSavingUtils.save_dirty_packages(True, True)
+    log("=== Import Pass Complete ===")
+
+
+if __name__ == "__main__":
+    main()

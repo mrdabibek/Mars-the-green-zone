@@ -1,0 +1,13 @@
+{
+	"FileVersion": 3,
+	"EngineAssociation": "5.2",
+	"Category": "",
+	"Description": "Mars: Last Green - first-person survival vertical slice",
+	"Modules": [
+		{ "Name": "MarsLastGreen", "Type": "Runtime", "LoadingPhase": "Default", "AdditionalDependencies": [ "Engine" ] }
+	],
+	"Plugins": [
+		{ "Name": "PythonScriptPlugin", "Enabled": true, "TargetAllowList": [ "Editor" ] },
+		{ "Name": "EditorScriptingUtilities", "Enabled": true, "TargetAllowList": [ "Editor" ] }
+	]
+}

@@ -1,0 +1,511 @@
+{
+  "Raider": {
+    "sk_fbx": "/home/dabi/Documents/Mars Last Green/Assets/Creatures/Production/Raider/SK_Alien_Raider.fbx",
+    "textures": [
+      "/home/dabi/Documents/Mars Last Green/Assets/Creatures/Production/Raider/Mars_Last_Green_Raider_Animated_basecolor.jpg",
+      "/home/dabi/Documents/Mars Last Green/Assets/Creatures/Production/Raider/Mars_Last_Green_Raider_Animated_normal.jpg"
+    ],
+    "animations": {
+      "Idle": {
+        "fbx": "/home/dabi/Documents/Mars Last Green/Assets/Creatures/Production/Raider/AS_Raider_Idle.fbx",
+        "frames": [
+          0,
+          60
+        ],
+        "num_keys": 61,
+        "duration_s": 2.0,
+        "bytes": 328652
+      },
+      "Walk": {
+        "fbx": "/home/dabi/Documents/Mars Last Green/Assets/Creatures/Production/Raider/AS_Raider_Walk.fbx",
+        "frames": [
+          0,
+          60
+        ],
+        "num_keys": 61,
+        "duration_s": 2.0,
+        "bytes": 342652
+      },
+      "Run": {
+        "fbx": "/home/dabi/Documents/Mars Last Green/Assets/Creatures/Production/Raider/AS_Raider_Run.fbx",
+        "frames": [
+          0,
+          21
+        ],
+        "num_keys": 22,
+        "duration_s": 0.7,
+        "bytes": 262220
+      },
+      "Telegraph": {
+        "fbx": "/home/dabi/Documents/Mars Last Green/Assets/Creatures/Production/Raider/AS_Raider_Telegraph.fbx",
+        "frames": [
+          0,
+          21
+        ],
+        "num_keys": 22,
+        "duration_s": 0.7,
+        "bytes": 262220
+      },
+      "Hit": {
+        "fbx": "/home/dabi/Documents/Mars Last Green/Assets/Creatures/Production/Raider/AS_Raider_Hit.fbx",
+        "frames": [
+          0,
+          14
+        ],
+        "num_keys": 15,
+        "duration_s": 0.4667,
+        "bytes": 247660
+      },
+      "Death": {
+        "fbx": "/home/dabi/Documents/Mars Last Green/Assets/Creatures/Production/Raider/AS_Raider_Death.fbx",
+        "frames": [
+          0,
+          45
+        ],
+        "num_keys": 46,
+        "duration_s": 1.5,
+        "bytes": 307500
+      }
+    },
+    "preview_png": "/home/dabi/Documents/Mars Last Green/Assets/Creatures/Production/Previews/Raider_contact_sheet.png",
+    "roundtrip": {
+      "skeleton": {
+        "bones": 32,
+        "expected_bones": 32,
+        "vertices": 4674,
+        "polygons": 9339,
+        "weighted": true,
+        "ue_size_cm": [
+          150.85,
+          69.37,
+          80.0
+        ],
+        "ue_min_z_cm": -0.0,
+        "bone_names": [
+          "Root",
+          "Spine_0",
+          "Spine_1",
+          "Spine_2",
+          "Spine_3",
+          "Head_0",
+          "Head_1",
+          "Head_2",
+          "Head_3",
+          "Front_Right_Scapula",
+          "Front_Right_Limb_0",
+          "Front_Right_Limb_1",
+          "Front_Right_Limb_2",
+          "Front_Right_Limb_3",
+          "Spine_4",
+          "Front_Left_Limb_0",
+          "Front_Left_Limb_1",
+          "Front_Left_Limb_2",
+          "Front_Left_Limb_3",
+          "Rear_Right_Limb_0",
+          "Rear_Right_Limb_1",
+          "Rear_Right_Limb_2",
+          "Rear_Right_Limb_3",
+          "Rear_Right_Limb_4",
+          "Rear_Left_Limb_0",
+          "Rear_Left_Limb_1",
+          "Rear_Left_Limb_2",
+          "Rear_Left_Limb_3",
+          "Rear_Left_Limb_4",
+          "Tail_0",
+          "Tail_1",
+          "Tail_2"
+        ]
+      },
+      "animations": {
+        "Idle": {
+          "roundtrip_frames": [
+            0.0,
+            60.0
+          ],
+          "quarter_motion": 0.4648,
+          "end_vs_start_diff": 0.0
+        },
+        "Walk": {
+          "roundtrip_frames": [
+            0.0,
+            60.0
+          ],
+          "quarter_motion": 6.3079,
+          "end_vs_start_diff": 0.0
+        },
+        "Run": {
+          "roundtrip_frames": [
+            0.0,
+            21.0
+          ],
+          "quarter_motion": 5.9661,
+          "end_vs_start_diff": 0.0
+        },
+        "Telegraph": {
+          "roundtrip_frames": [
+            0.0,
+            21.0
+          ],
+          "quarter_motion": 6.1851,
+          "end_vs_start_diff": 0.0
+        },
+        "Hit": {
+          "roundtrip_frames": [
+            0.0,
+            14.0
+          ],
+          "quarter_motion": 6.3088,
+          "end_vs_start_diff": 0.0
+        },
+        "Death": {
+          "roundtrip_frames": [
+            0.0,
+            45.0
+          ],
+          "quarter_motion": 5.6502,
+          "end_vs_start_diff": 5.0448
+        }
+      }
+    }
+  },
+  "Breaker": {
+    "sk_fbx": "/home/dabi/Documents/Mars Last Green/Assets/Creatures/Production/Breaker/SK_Alien_Breaker.fbx",
+    "textures": [
+      "/home/dabi/Documents/Mars Last Green/Assets/Creatures/Production/Breaker/Mars_Last_Green_Breacher_Animated_basecolor.jpg",
+      "/home/dabi/Documents/Mars Last Green/Assets/Creatures/Production/Breaker/Mars_Last_Green_Breacher_Animated_normal.jpg"
+    ],
+    "animations": {
+      "Idle": {
+        "fbx": "/home/dabi/Documents/Mars Last Green/Assets/Creatures/Production/Breaker/AS_Breaker_Idle.fbx",
+        "frames": [
+          0,
+          75
+        ],
+        "num_keys": 76,
+        "duration_s": 2.5,
+        "bytes": 264940
+      },
+      "Walk": {
+        "fbx": "/home/dabi/Documents/Mars Last Green/Assets/Creatures/Production/Breaker/AS_Breaker_Walk.fbx",
+        "frames": [
+          0,
+          60
+        ],
+        "num_keys": 61,
+        "duration_s": 2.0,
+        "bytes": 250956
+      },
+      "Run": {
+        "fbx": "/home/dabi/Documents/Mars Last Green/Assets/Creatures/Production/Breaker/AS_Breaker_Run.fbx",
+        "frames": [
+          0,
+          30
+        ],
+        "num_keys": 31,
+        "duration_s": 1.0,
+        "bytes": 213628
+      },
+      "Telegraph": {
+        "fbx": "/home/dabi/Documents/Mars Last Green/Assets/Creatures/Production/Breaker/AS_Breaker_Telegraph.fbx",
+        "frames": [
+          0,
+          54
+        ],
+        "num_keys": 55,
+        "duration_s": 1.8,
+        "bytes": 241068
+      },
+      "Hit": {
+        "fbx": "/home/dabi/Documents/Mars Last Green/Assets/Creatures/Production/Breaker/AS_Breaker_Hit.fbx",
+        "frames": [
+          0,
+          36
+        ],
+        "num_keys": 37,
+        "duration_s": 1.2,
+        "bytes": 212380
+      },
+      "Death": {
+        "fbx": "/home/dabi/Documents/Mars Last Green/Assets/Creatures/Production/Breaker/AS_Breaker_Death.fbx",
+        "frames": [
+          0,
+          45
+        ],
+        "num_keys": 46,
+        "duration_s": 1.5,
+        "bytes": 226636
+      }
+    },
+    "preview_png": "/home/dabi/Documents/Mars Last Green/Assets/Creatures/Production/Previews/Breaker_contact_sheet.png",
+    "roundtrip": {
+      "skeleton": {
+        "bones": 23,
+        "expected_bones": 23,
+        "vertices": 4840,
+        "polygons": 9676,
+        "weighted": true,
+        "ue_size_cm": [
+          420.59,
+          196.7,
+          200.0
+        ],
+        "ue_min_z_cm": -0.0,
+        "bone_names": [
+          "Root",
+          "Spine_0",
+          "Spine_1",
+          "Spine_2",
+          "Head_0",
+          "Head_1",
+          "Spine_3",
+          "Front_Right_Limb_0",
+          "Front_Right_Limb_1",
+          "Front_Right_Limb_2",
+          "Front_Left_Limb_0",
+          "Front_Left_Limb_1",
+          "Front_Left_Limb_2",
+          "Front_Left_Limb_3",
+          "Tail_0",
+          "Tail_1",
+          "Tail_2",
+          "Rear_Right_Limb_0",
+          "Rear_Right_Limb_1",
+          "Rear_Right_Limb_2",
+          "Rear_Left_Limb_0",
+          "Rear_Left_Limb_1",
+          "Rear_Left_Limb_2"
+        ]
+      },
+      "animations": {
+        "Idle": {
+          "roundtrip_frames": [
+            0.0,
+            75.0
+          ],
+          "quarter_motion": 0.266,
+          "end_vs_start_diff": 0.0
+        },
+        "Walk": {
+          "roundtrip_frames": [
+            0.0,
+            60.0
+          ],
+          "quarter_motion": 5.9962,
+          "end_vs_start_diff": 0.0
+        },
+        "Run": {
+          "roundtrip_frames": [
+            0.0,
+            30.0
+          ],
+          "quarter_motion": 6.5684,
+          "end_vs_start_diff": 0.0
+        },
+        "Telegraph": {
+          "roundtrip_frames": [
+            0.0,
+            54.0
+          ],
+          "quarter_motion": 2.2738,
+          "end_vs_start_diff": 0.0
+        },
+        "Hit": {
+          "roundtrip_frames": [
+            0.0,
+            36.0
+          ],
+          "quarter_motion": 6.3768,
+          "end_vs_start_diff": 0.0
+        },
+        "Death": {
+          "roundtrip_frames": [
+            0.0,
+            45.0
+          ],
+          "quarter_motion": 6.3901,
+          "end_vs_start_diff": 6.1949
+        }
+      }
+    }
+  },
+  "Gunner": {
+    "sk_fbx": "/home/dabi/Documents/Mars Last Green/Assets/Creatures/Production/Gunner/SK_Alien_Gunner.fbx",
+    "textures": [
+      "/home/dabi/Documents/Mars Last Green/Assets/Creatures/Production/Gunner/Mars_Last_Green_Gunner_basecolor.png",
+      "/home/dabi/Documents/Mars Last Green/Assets/Creatures/Production/Gunner/Mars_Last_Green_Gunner_normal.png"
+    ],
+    "animations": {
+      "Idle": {
+        "fbx": "/home/dabi/Documents/Mars Last Green/Assets/Creatures/Production/Gunner/AS_Gunner_Idle.fbx",
+        "frames": [
+          0,
+          60
+        ],
+        "num_keys": 61,
+        "duration_s": 2.0,
+        "bytes": 257260
+      },
+      "Walk": {
+        "fbx": "/home/dabi/Documents/Mars Last Green/Assets/Creatures/Production/Gunner/AS_Gunner_Walk.fbx",
+        "frames": [
+          0,
+          36
+        ],
+        "num_keys": 37,
+        "duration_s": 1.2,
+        "bytes": 225484
+      },
+      "Run": {
+        "fbx": "/home/dabi/Documents/Mars Last Green/Assets/Creatures/Production/Gunner/AS_Gunner_Run.fbx",
+        "frames": [
+          0,
+          21
+        ],
+        "num_keys": 22,
+        "duration_s": 0.7,
+        "bytes": 208828
+      },
+      "Telegraph": {
+        "fbx": "/home/dabi/Documents/Mars Last Green/Assets/Creatures/Production/Gunner/AS_Gunner_Telegraph.fbx",
+        "frames": [
+          0,
+          27
+        ],
+        "num_keys": 28,
+        "duration_s": 0.9,
+        "bytes": 223324
+      },
+      "Cover": {
+        "fbx": "/home/dabi/Documents/Mars Last Green/Assets/Creatures/Production/Gunner/AS_Gunner_Cover.fbx",
+        "frames": [
+          0,
+          60
+        ],
+        "num_keys": 61,
+        "duration_s": 2.0,
+        "bytes": 258236
+      },
+      "Hit": {
+        "fbx": "/home/dabi/Documents/Mars Last Green/Assets/Creatures/Production/Gunner/AS_Gunner_Hit.fbx",
+        "frames": [
+          0,
+          15
+        ],
+        "num_keys": 16,
+        "duration_s": 0.5,
+        "bytes": 200172
+      },
+      "Death": {
+        "fbx": "/home/dabi/Documents/Mars Last Green/Assets/Creatures/Production/Gunner/AS_Gunner_Death.fbx",
+        "frames": [
+          0,
+          45
+        ],
+        "num_keys": 46,
+        "duration_s": 1.5,
+        "bytes": 241948
+      }
+    },
+    "preview_png": "/home/dabi/Documents/Mars Last Green/Assets/Creatures/Production/Previews/Gunner_contact_sheet.png",
+    "roundtrip": {
+      "skeleton": {
+        "bones": 25,
+        "expected_bones": 25,
+        "vertices": 36053,
+        "polygons": 48122,
+        "weighted": true,
+        "ue_size_cm": [
+          78.51,
+          94.99,
+          180.13
+        ],
+        "ue_min_z_cm": -0.09,
+        "bone_names": [
+          "root",
+          "pelvis",
+          "spine_01",
+          "spine_02",
+          "spine_03",
+          "neck_01",
+          "head",
+          "clavicle_l",
+          "upperarm_l",
+          "lowerarm_l",
+          "hand_l",
+          "clavicle_r",
+          "upperarm_r",
+          "lowerarm_r",
+          "hand_r",
+          "weapon_r",
+          "muzzle",
+          "thigh_l",
+          "calf_l",
+          "foot_l",
+          "ball_l",
+          "thigh_r",
+          "calf_r",
+          "foot_r",
+          "ball_r"
+        ]
+      },
+      "animations": {
+        "Idle": {
+          "roundtrip_frames": [
+            0.0,
+            60.0
+          ],
+          "quarter_motion": 0.1456,
+          "end_vs_start_diff": 0.0
+        },
+        "Walk": {
+          "roundtrip_frames": [
+            0.0,
+            36.0
+          ],
+          "quarter_motion": 0.4976,
+          "end_vs_start_diff": 0.0
+        },
+        "Run": {
+          "roundtrip_frames": [
+            0.0,
+            21.0
+          ],
+          "quarter_motion": 0.9468,
+          "end_vs_start_diff": 0.0
+        },
+        "Telegraph": {
+          "roundtrip_frames": [
+            0.0,
+            27.0
+          ],
+          "quarter_motion": 1.5138,
+          "end_vs_start_diff": 0.0
+        },
+        "Cover": {
+          "roundtrip_frames": [
+            0.0,
+            60.0
+          ],
+          "quarter_motion": 0.1581,
+          "end_vs_start_diff": 0.0
+        },
+        "Hit": {
+          "roundtrip_frames": [
+            0.0,
+            15.0
+          ],
+          "quarter_motion": 0.6993,
+          "end_vs_start_diff": 0.0
+        },
+        "Death": {
+          "roundtrip_frames": [
+            0.0,
+            45.0
+          ],
+          "quarter_motion": 1.7438,
+          "end_vs_start_diff": 5.7735
+        }
+      }
+    }
+  }
+}

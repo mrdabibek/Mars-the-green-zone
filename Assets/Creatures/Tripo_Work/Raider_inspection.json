@@ -1,0 +1,17 @@
+{
+  "source": "tripo_convert_52e2c664-d0d0-42f4-a60e-f676d754875b.fbx",
+  "name": "Raider",
+  "blend": "Raider_walk.blend",
+  "action": "Armature|preset:quadruped:walk",
+  "frames": [
+    1,
+    62
+  ],
+  "fps": 30,
+  "bones": 32,
+  "vertices": 4674,
+  "polygons": 9339,
+  "seam_bone_translation_max": 0.022102623507638558,
+  "quarter_frame_bone_motion_max": 0.1737218646550471,
+  "note": "Imported Tripo walk, visual and Unreal validation required; motion metrics are in armature local units."
+}

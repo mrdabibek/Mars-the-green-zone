@@ -1,0 +1,1442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mars: Last Green — NASA Space Apps Challenge Briefing (7-Slide Global Edition)</title>
+<style>
+  :root {
+    --bg-void: #04070c;
+    --bg-deck: #070d15;
+    --bg-panel: rgba(12, 21, 34, 0.86);
+    --border-dim: rgba(56, 189, 248, 0.18);
+    --border-bright: rgba(56, 189, 248, 0.48);
+    --emerald: #10b981;
+    --emerald-hi: #34d399;
+    --cyan: #06b6d4;
+    --cyan-hi: #38bdf8;
+    --ochre: #e07a38;
+    --amber: #f59e0b;
+    --crimson: #ef4444;
+    --violet: #a855f7;
+    --blue: #3b82f6;
+    --text-main: #e6f0f8;
+    --text-muted: #94a3b8;
+    --text-dim: #64748b;
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    width: 100%; height: 100%;
+    background: var(--bg-void);
+    color: var(--text-main);
+    font-family: var(--font-sans);
+    overflow: hidden;
+    user-select: none;
+  }
+
+  body::before {
+    content: ''; position: fixed; inset: 0;
+    background:
+      radial-gradient(circle at 16% 18%, rgba(16, 185, 129, 0.10), transparent 44%),
+      radial-gradient(circle at 84% 82%, rgba(224, 122, 56, 0.11), transparent 46%),
+      linear-gradient(rgba(56, 189, 248, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(56, 189, 248, 0.03) 1px, transparent 1px);
+    background-size: 100% 100%, 100% 100%, 44px 44px, 44px 44px;
+    pointer-events: none; z-index: 0;
+  }
+
+  .progress-bar {
+    position: fixed; top: 0; left: 0; height: 3px;
+    background: linear-gradient(90deg, var(--emerald), var(--cyan-hi), var(--ochre));
+    transition: width 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+    z-index: 300;
+    box-shadow: 0 0 14px rgba(56, 189, 248, 0.75);
+  }
+
+  .stage-wrap {
+    position: fixed; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    padding: 12px 16px 54px; z-index: 1;
+  }
+
+  .slide-deck {
+    position: relative;
+    width: min(100%, calc((100vh - 66px) * 16 / 9));
+    aspect-ratio: 16 / 9;
+    background: var(--bg-deck);
+    border: 1px solid var(--border-dim);
+    border-radius: 12px;
+    box-shadow: 0 32px 96px rgba(0, 0, 0, 0.85), inset 0 0 0 1px rgba(255,255,255,0.03);
+    overflow: hidden;
+  }
+
+  .slide-deck::before, .slide-deck::after {
+    content: ''; position: absolute; width: 24px; height: 24px;
+    border-color: var(--cyan-hi); border-style: solid;
+    pointer-events: none; z-index: 60; opacity: 0.65;
+  }
+  .slide-deck::before { top: 10px; left: 10px; border-width: 2px 0 0 2px; }
+  .slide-deck::after  { bottom: 10px; right: 10px; border-width: 0 2px 2px 0; }
+
+  .slide {
+    position: absolute; inset: 0;
+    padding: 22px 32px 20px;
+    display: flex; flex-direction: column; gap: 12px;
+    opacity: 0; visibility: hidden;
+    transform: scale(0.975) translateY(10px);
+    filter: blur(4px);
+    transition: opacity 0.42s cubic-bezier(0.22, 1, 0.36, 1),
+                transform 0.48s cubic-bezier(0.22, 1, 0.36, 1),
+                filter 0.42s ease, visibility 0.42s;
+    overflow: hidden;
+  }
+  .slide.active { opacity: 1; visibility: visible; transform: scale(1) translateY(0); filter: blur(0); }
+
+  .slide.active .morph-in { animation: morphSlideUp 0.52s cubic-bezier(0.16, 1, 0.3, 1) both; }
+  .slide.active .morph-d1 { animation-delay: 0.05s; }
+  .slide.active .morph-d2 { animation-delay: 0.12s; }
+  .slide.active .morph-d3 { animation-delay: 0.19s; }
+  .slide.active .morph-d4 { animation-delay: 0.26s; }
+
+  @keyframes morphSlideUp {
+    from { opacity: 0; transform: translateY(14px) scale(0.97); clip-path: inset(0 0 18% 0 round 8px); }
+    to   { opacity: 1; transform: translateY(0) scale(1); clip-path: inset(0 0 0% 0 round 8px); }
+  }
+  @keyframes pulseGlow {
+    0%, 100% { box-shadow: 0 0 8px rgba(52, 211, 153, 0.45); }
+    50%      { box-shadow: 0 0 18px rgba(52, 211, 153, 0.9); }
+  }
+
+  .slide-header {
+    display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 1px solid var(--border-dim); padding-bottom: 8px; flex-shrink: 0;
+  }
+  .slide-kicker {
+    font-family: var(--font-mono); font-size: clamp(10px, 0.88vw, 12px);
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--cyan-hi);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .dot-live {
+    width: 7px; height: 7px; border-radius: 50%; background: var(--emerald-hi);
+    animation: pulseGlow 2s infinite; display: inline-block;
+  }
+  .slide-h1 { font-size: clamp(19px, 2.0vw, 29px); font-weight: 750; letter-spacing: -0.02em; line-height: 1.12; color: #fff; margin-top: 2px; }
+  .slide-badge {
+    font-family: var(--font-mono); font-size: 10.5px; padding: 4px 10px; border-radius: 4px;
+    background: rgba(16, 185, 129, 0.13); border: 1px solid rgba(16, 185, 129, 0.42);
+    color: var(--emerald-hi); letter-spacing: 0.08em; white-space: nowrap;
+  }
+  .slide-badge.ochre { background: rgba(224, 122, 56, 0.15); border-color: rgba(224, 122, 56, 0.45); color: #fb923c; }
+  .slide-badge.cyan  { background: rgba(6, 182, 212, 0.15); border-color: rgba(6, 182, 212, 0.45); color: var(--cyan-hi); }
+
+  .slide-body { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 11px; }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 13px; height: 100%; min-height: 0; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 11px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 9px; }
+  .grid-55-45 { display: grid; grid-template-columns: 1.16fr 1fr; gap: 13px; height: 100%; min-height: 0; }
+  .grid-45-55 { display: grid; grid-template-columns: 0.92fr 1.08fr; gap: 13px; height: 100%; min-height: 0; }
+
+  .panel {
+    background: var(--bg-panel); border: 1px solid var(--border-dim); border-radius: 8px;
+    padding: 11px 13px; position: relative; display: flex; flex-direction: column; gap: 7px;
+    min-height: 0; backdrop-filter: blur(6px);
+  }
+  .panel.accent-emerald { border-left: 3px solid var(--emerald); }
+  .panel.accent-cyan    { border-left: 3px solid var(--cyan-hi); }
+  .panel.accent-ochre   { border-left: 3px solid var(--ochre); }
+  .panel.accent-crimson { border-left: 3px solid var(--crimson); }
+  .panel.accent-violet  { border-left: 3px solid var(--violet); }
+  .panel.accent-blue    { border-left: 3px solid var(--blue); }
+
+  .panel-title {
+    font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--cyan-hi); display: flex; justify-content: space-between; align-items: center; gap: 8px;
+  }
+  .panel-title.emerald { color: var(--emerald-hi); }
+  .panel-title.ochre   { color: #fb923c; }
+
+  .big-num { font-family: var(--font-mono); font-size: clamp(19px, 2.0vw, 28px); font-weight: 750; line-height: 1.05; }
+  .big-num.emerald { color: var(--emerald-hi); }
+  .big-num.cyan    { color: var(--cyan-hi); }
+  .big-num.ochre   { color: var(--amber); }
+
+  .sub-note { font-size: clamp(10.5px, 0.88vw, 12px); color: var(--text-muted); line-height: 1.4; }
+  .mono { font-family: var(--font-mono); }
+  .code-pill {
+    font-family: var(--font-mono); font-size: 10px;
+    background: rgba(56, 189, 248, 0.11); border: 1px solid rgba(56, 189, 248, 0.30);
+    color: var(--cyan-hi); padding: 2px 6px; border-radius: 4px; display: inline-block;
+  }
+  .code-pill.emerald { background: rgba(16, 185, 129, 0.13); border-color: rgba(16, 185, 129, 0.38); color: var(--emerald-hi); }
+  .code-pill.ochre   { background: rgba(224, 122, 56, 0.15); border-color: rgba(224, 122, 56, 0.42); color: #fdba74; }
+
+  .kv-list { display: flex; flex-direction: column; gap: 4px; font-size: clamp(10px, 0.86vw, 12px); }
+  .kv-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 4px 7px; background: rgba(5, 9, 15, 0.62);
+    border-radius: 4px; border: 1px solid rgba(255,255,255,0.04); gap: 8px;
+  }
+  .kv-k { color: var(--text-muted); }
+  .kv-v { font-family: var(--font-mono); color: #fff; font-weight: 600; text-align: right; }
+
+  .canvas-box {
+    position: relative; width: 100%; height: 100%; min-height: 0;
+    background: radial-gradient(circle at 50% 45%, rgba(15, 29, 46, 0.85), #04070c 82%);
+    border: 1px solid var(--border-dim); border-radius: 7px; overflow: hidden;
+  }
+  .canvas-box canvas { width: 100%; height: 100%; display: block; cursor: grab; }
+  .canvas-box canvas:active { cursor: grabbing; }
+  .canvas-hud-overlay, .canvas-hud-top {
+    position: absolute; left: 9px; right: 9px; display: flex; justify-content: space-between; align-items: center;
+    pointer-events: none; font-family: var(--font-mono); font-size: 9.5px;
+  }
+  .canvas-hud-top { top: 7px; color: var(--emerald-hi); }
+  .canvas-hud-overlay { bottom: 7px; color: var(--cyan-hi); }
+
+  /* Hero */
+  .hero-wrap { flex: 1; display: grid; grid-template-columns: 1.14fr 0.96fr; gap: 18px; align-items: stretch; min-height: 0; }
+  .hero-eyebrow { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.16em; color: var(--ochre); text-transform: uppercase; margin-bottom: 5px; }
+  .hero-title {
+    font-size: clamp(34px, 4.0vw, 54px); font-weight: 850; line-height: 1.0; letter-spacing: -0.03em;
+    background: linear-gradient(120deg, #ffffff 8%, var(--emerald-hi) 48%, var(--cyan-hi) 86%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 8px;
+  }
+  .hero-sub { font-size: clamp(12px, 1.1vw, 14.5px); color: var(--text-muted); line-height: 1.45; margin-bottom: 10px; }
+  .nasa-pillars { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; margin-bottom: 10px; }
+  .pillar-chip {
+    background: rgba(10, 18, 30, 0.9); border: 1px solid rgba(56,189,248,0.22); border-radius: 5px;
+    padding: 5px 8px; font-size: 10.5px; color: var(--text-main);
+  }
+  .pillar-chip strong { color: var(--emerald-hi); font-family: var(--font-mono); font-size: 10px; display: block; }
+
+  .thumb-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; margin-top: auto; }
+  .thumb-card {
+    position: relative; border-radius: 5px; overflow: hidden; border: 1px solid var(--border-dim);
+    aspect-ratio: 16 / 9; cursor: pointer; background: #03060a; transition: transform 0.22s ease, border-color 0.22s ease;
+  }
+  .thumb-card:hover { transform: translateY(-2px) scale(1.03); border-color: var(--emerald-hi); }
+  .thumb-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .thumb-cap {
+    position: absolute; left: 0; right: 0; bottom: 0; padding: 2px 5px;
+    background: linear-gradient(transparent, rgba(4,7,12,0.92)); font-family: var(--font-mono); font-size: 8.5px; color: #fff;
+  }
+
+  .btn-chip {
+    font-family: var(--font-mono); font-size: 10.5px; padding: 5px 9px; border-radius: 4px;
+    background: rgba(13, 22, 35, 0.92); border: 1px solid var(--border-dim); color: var(--text-muted);
+    cursor: pointer; transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .btn-chip:hover { border-color: var(--cyan-hi); color: #fff; transform: translateY(-1px); }
+  .btn-chip.active { background: rgba(16, 185, 129, 0.18); border-color: var(--emerald-hi); color: var(--emerald-hi); }
+  .btn-chip.active-ochre { background: rgba(224, 122, 56, 0.2); border-color: var(--amber); color: #fed7aa; }
+  .btn-chip.active-crimson { background: rgba(239, 68, 68, 0.2); border-color: var(--crimson); color: #fca5a5; }
+  .btn-chip.active-blue { background: rgba(59, 130, 246, 0.2); border-color: var(--blue); color: #93c5fd; }
+  .btn-chip.active-violet { background: rgba(168, 85, 247, 0.2); border-color: var(--violet); color: #d8b4fe; }
+
+  input[type="range"] { width: 100%; accent-color: var(--ochre); cursor: pointer; }
+
+  .timeline { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
+  .tl-node {
+    background: rgba(6, 10, 15, 0.78); border: 1px solid var(--border-dim); border-top: 3px solid var(--ochre);
+    border-radius: 6px; padding: 5px 7px; display: flex; flex-direction: column; gap: 2px;
+  }
+  .tl-time { font-family: var(--font-mono); font-size: 10.5px; font-weight: 700; color: var(--amber); }
+  .tl-name { font-size: 11px; font-weight: 600; color: #fff; }
+  .tl-desc { font-size: 9.5px; color: var(--text-muted); line-height: 1.25; }
+
+  /* Galleries & Shots */
+  .gallery-grid-3x2 { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, 1fr); gap: 8px; flex: 1; min-height: 0; }
+  .shot-card {
+    position: relative; border-radius: 6px; overflow: hidden; border: 1px solid var(--border-dim);
+    background: #04070b; cursor: pointer; transition: transform 0.25s ease, border-color 0.25s ease;
+  }
+  .shot-card:hover { transform: translateY(-2px) scale(1.02); border-color: var(--cyan-hi); z-index: 4; }
+  .shot-card img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.35s ease; }
+  .shot-card:hover img { transform: scale(1.06); }
+  .shot-caption {
+    position: absolute; left: 0; right: 0; bottom: 0; padding: 7px 9px 5px;
+    background: linear-gradient(transparent, rgba(4, 7, 12, 0.95) 45%);
+    display: flex; justify-content: space-between; align-items: flex-end; gap: 6px;
+  }
+  .shot-title { font-size: 10.5px; font-weight: 650; color: #fff; }
+  .shot-meta  { font-family: var(--font-mono); font-size: 8.5px; color: var(--cyan-hi); }
+
+  .data-table { width: 100%; border-collapse: collapse; font-size: clamp(9.5px, 0.82vw, 11.5px); }
+  .data-table th {
+    font-family: var(--font-mono); font-size: 9px; text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--cyan-hi); text-align: left; padding: 4px 6px; border-bottom: 1px solid var(--border-bright);
+  }
+  .data-table td { padding: 4px 6px; border-bottom: 1px solid rgba(255,255,255,0.05); color: var(--text-main); }
+  .status-pass { font-family: var(--font-mono); font-size: 9.5px; color: var(--emerald-hi); background: rgba(16,185,129,0.14); border: 1px solid rgba(16,185,129,0.35); padding: 1px 5px; border-radius: 3px; }
+  .status-pending { font-family: var(--font-mono); font-size: 9.5px; color: var(--amber); background: rgba(245,158,11,0.14); border: 1px solid rgba(245,158,11,0.35); padding: 1px 5px; border-radius: 3px; }
+
+  .view-morph-wrap { position: relative; flex: 1; min-height: 0; }
+  .view-layer {
+    position: absolute; inset: 0; opacity: 0; visibility: hidden; transform: scale(0.96);
+    transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), visibility 0.4s;
+  }
+  .view-layer.active { opacity: 1; visibility: visible; transform: scale(1); }
+
+  .nav-bar {
+    position: fixed; bottom: 10px; left: 50%; transform: translateX(-50%);
+    display: flex; align-items: center; gap: 9px;
+    background: rgba(8, 13, 22, 0.94); border: 1px solid var(--border-dim);
+    border-radius: 999px; padding: 5px 14px; z-index: 320; backdrop-filter: blur(8px);
+  }
+  .nav-btn {
+    background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.28);
+    color: var(--text-main); height: 27px; padding: 0 11px; border-radius: 999px;
+    font-family: var(--font-mono); font-size: 11.5px; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 5px; transition: all 0.15s;
+  }
+  .nav-btn:hover { background: rgba(56, 189, 248, 0.25); border-color: var(--cyan-hi); }
+  .slide-counter { font-family: var(--font-mono); font-size: 11.5px; color: var(--text-muted); min-width: 50px; text-align: center; }
+  .nav-dots { display: flex; gap: 5px; align-items: center; }
+  .nav-dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(148,163,184,0.3); cursor: pointer; transition: all 0.25s; }
+  .nav-dot.active { width: 18px; border-radius: 99px; background: var(--emerald-hi); }
+
+  .index-overlay, .lightbox {
+    position: fixed; inset: 0; background: rgba(3, 6, 11, 0.92); backdrop-filter: blur(8px);
+    z-index: 450; display: none; align-items: center; justify-content: center; padding: 24px;
+  }
+  .index-overlay.open, .lightbox.open { display: flex; }
+  .index-modal {
+    width: min(980px, 95vw); max-height: 86vh; background: var(--bg-deck);
+    border: 1px solid var(--border-bright); border-radius: 10px; padding: 20px 24px;
+    display: flex; flex-direction: column; gap: 14px; overflow-y: auto;
+  }
+  .index-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .index-card { background: var(--bg-panel); border: 1px solid var(--border-dim); border-radius: 7px; padding: 10px 12px; cursor: pointer; transition: all 0.16s; }
+  .index-card:hover, .index-card.current { border-color: var(--emerald-hi); background: rgba(16, 185, 129, 0.09); }
+  .index-num { font-family: var(--font-mono); font-size: 10.5px; color: var(--cyan-hi); margin-bottom: 3px; }
+  .index-title { font-size: 13.5px; font-weight: 650; color: #fff; margin-bottom: 3px; }
+  .index-desc { font-size: 11px; color: var(--text-muted); line-height: 1.32; }
+
+  .lightbox { flex-direction: column; gap: 12px; z-index: 500; }
+  .lightbox-frame { position: relative; display: flex; align-items: center; gap: 16px; }
+  .lightbox img { max-width: 82vw; max-height: 78vh; border-radius: 8px; border: 1px solid var(--border-bright); box-shadow: 0 24px 64px rgba(0,0,0,0.85); }
+  .lightbox-cap { font-family: var(--font-mono); font-size: 13px; color: var(--cyan-hi); text-align: center; max-width: 80vw; }
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+
+<div class="stage-wrap">
+  <div class="slide-deck" id="slideDeck">
+
+    <!-- ==================== SLIDE 1: 30-SEC HOOK + 3D MARS GLOBE + 4 PREVIEWS ==================== -->
+    <section class="slide active" data-title="Mission Brief (30s Pitch)" data-desc="30-second Space Apps pitch, 5 NASA judging pillars, 3D Mars globe, and live Vulkan SM5 previews.">
+      <div class="slide-header">
+        <div class="slide-kicker"><span class="dot-live"></span> NASA SPACE APPS CHALLENGE // 30-SECOND MISSION BRIEF</div>
+        <span class="slide-badge">7-SLIDE GLOBAL EDITION // UE 5.2 C++</span>
+      </div>
+      <div class="hero-wrap">
+        <div style="display:flex; flex-direction:column; min-height:0;">
+          <div class="hero-eyebrow morph-in morph-d1">ASTER ONE // JEZERO CRATER BASIN (+18.38°N)</div>
+          <h1 class="hero-title morph-in morph-d1">MARS:<br>LAST GREEN</h1>
+          <p class="hero-sub morph-in morph-d2">
+            An interactive <strong>UE 5.2 C++ Survival FPS &amp; Closed-Loop ECLSS Simulator</strong> built directly around NASA Mars planetary data.
+            Balance <strong>0.38G</strong> EVA expeditions, Sabatier water synthesis, CRISPR stress-adapted crops, and perimeter defense to keep humanity's last seed bank alive.
+          </p>
+          <div class="nasa-pillars morph-in morph-d2">
+            <div class="pillar-chip"><strong>IMPACT &amp; CREATIVITY</strong>Turns dry NASA ECLSS equations into high-stakes playable STEM simulation.</div>
+            <div class="pillar-chip"><strong>VALIDITY &amp; NASA DATA</strong>0.38G, 6.1 mbar CO₂, 45% dust-storm solar floor &amp; Codex citing NASA facts.</div>
+          </div>
+          <div class="thumb-strip morph-in morph-d3">
+            <div class="thumb-card" onclick="openVideoModal()">
+              <img src="Final_Screenshots/HighresScreenshot00012.png" alt="Promotional Trailer">
+              <div class="thumb-cap" style="color:var(--emerald-hi);">▶ TRAILER (42s)</div>
+            </div>
+            <div class="thumb-card" onclick="openLightboxBySrc('Final_Screenshots/HighresScreenshot00004.png')">
+              <img src="Final_Screenshots/HighresScreenshot00004.png" alt="Greenhouse">
+              <div class="thumb-cap">BIO-BAY</div>
+            </div>
+            <div class="thumb-card" onclick="openLightboxBySrc('Final_Screenshots/HighresScreenshot00014.png')">
+              <img src="Final_Screenshots/HighresScreenshot00014.png" alt="Heavy Dropship">
+              <div class="thumb-cap">HEAVY DROPSHIP</div>
+            </div>
+            <div class="thumb-card" onclick="openLightboxBySrc('Final_Screenshots/HighresScreenshot00017.png')">
+              <img src="Final_Screenshots/HighresScreenshot00017.png" alt="Combat">
+              <div class="thumb-cap">ALIEN SWARM</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel accent-emerald morph-in morph-d2" style="padding:10px; justify-content:space-between;">
+          <div class="canvas-box" style="flex:1;">
+            <canvas id="canvasMars3D"></canvas>
+            <div class="canvas-hud-top">
+              <span>3D ORBITAL TELEMETRY // DRAG TO ROTATE</span>
+              <span class="code-pill emerald">JEZERO BASIN</span>
+            </div>
+            <div class="canvas-hud-overlay">
+              <span>6.1 mbar CO₂ | -22°C..-78°C</span>
+              <span>SOLAR: 100% → 45% STORM</span>
+            </div>
+          </div>
+          <div class="grid-3" style="flex-shrink:0;">
+            <div style="background:rgba(5,9,16,0.78); padding:7px; border-radius:5px; text-align:center;">
+              <div class="big-num emerald" style="font-size:19px;">0.38G</div>
+              <div class="sub-note" style="font-size:9.5px;">Mars EVA Gravity</div>
+            </div>
+            <div style="background:rgba(5,9,16,0.78); padding:7px; border-radius:5px; text-align:center;">
+              <div class="big-num cyan" style="font-size:19px;">2.2×</div>
+              <div class="sub-note" style="font-size:9.5px;">Sabatier H₂O Synth</div>
+            </div>
+            <div style="background:rgba(5,9,16,0.78); padding:7px; border-radius:5px; text-align:center;">
+              <div class="big-num ochre" style="font-size:19px;">60%</div>
+              <div class="sub-note" style="font-size:9.5px;">Sealed H₂O Recycle</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== SLIDE 2: PROLOGUE & 3D EARTH BREAKUP MORPH ==================== -->
+    <section class="slide" data-title="Prologue & 3D Earth Rupture" data-desc="Interactive 3D Earth tectonic plate breakup morph, DropLander continuity, and 11-phase mission chain.">
+      <div class="slide-header">
+        <div>
+          <div class="slide-kicker"><span class="dot-live"></span> 02 // STORYTELLING HOOK &amp; PLANETARY IMPERATIVE</div>
+          <h1 class="slide-h1">3D Tectonic Breakup Morph &amp; DropShip Touchdown</h1>
+        </div>
+        <span class="slide-badge ochre">MLGPrologue // 12 VORONOI PLATES + 18 EJECTA</span>
+      </div>
+      <div class="slide-body">
+        <div class="timeline morph-in morph-d1">
+          <div class="tl-node"><span class="tl-time">T+0.65s</span><span class="tl-name">Final Descent</span><span class="tl-desc">5 thrusters ignite toward (-1850,-900).</span></div>
+          <div class="tl-node"><span class="tl-time">T+4.70s</span><span class="tl-name">Touchdown</span><span class="tl-desc">Suspension bounce + dust shockwave.</span></div>
+          <div class="tl-node"><span class="tl-time">T+8.10s</span><span class="tl-name">Orbital Cut</span><span class="tl-desc">Relay feed locks; crust seams prime.</span></div>
+          <div class="tl-node"><span class="tl-time">T+12.3s</span><span class="tl-name">First Fissures</span><span class="tl-desc">Magma core glows under crust plates.</span></div>
+          <div class="tl-node"><span class="tl-time">T+17.6s</span><span class="tl-name">Rupture</span><span class="tl-desc">Plasma ring &amp; 18 asteroid shards.</span></div>
+          <div class="tl-node" style="border-top-color:var(--emerald-hi);"><span class="tl-time" style="color:var(--emerald-hi);">T+24.6s</span><span class="tl-name">Aster One Solo</span><span class="tl-desc">Seamless FPS handoff into DropShip.</span></div>
+        </div>
+
+        <div class="grid-55-45" style="min-height:0;">
+          <div class="panel accent-ochre morph-in morph-d2" style="padding:10px; justify-content:space-between;">
+            <div class="panel-title ochre">
+              <span>3D EARTH FRACTURE MORPH SIMULATOR</span>
+              <div style="display:flex; gap:6px; align-items:center;">
+                <button class="btn-chip active-ochre" onclick="replayEarthMorph()">▶ Replay Rupture</button>
+                <span class="code-pill ochre" id="earthMorphPct">42%</span>
+              </div>
+            </div>
+            <div class="canvas-box" style="flex:1;">
+              <canvas id="canvasEarth3D"></canvas>
+              <div class="canvas-hud-top">
+                <span id="earthPhaseLabel">TECTONIC FISSURES IGNITING</span>
+                <span>12 CRUST PLATES + MAGMA CORE</span>
+              </div>
+              <div class="canvas-hud-overlay">
+                <span>DRAG TO ORBIT 3D RUPTURE</span>
+                <span>M_PrologueCoreCorona + Shockwave</span>
+              </div>
+            </div>
+            <div style="display:flex; align-items:center; gap:10px;">
+              <span class="mono" style="font-size:10.5px; color:var(--text-muted); white-space:nowrap;">Morph Rupture:</span>
+              <input type="range" id="earthMorphSlider" min="0" max="100" value="42">
+            </div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; gap:10px; min-height:0;">
+            <div class="panel accent-emerald morph-in morph-d3" style="flex:1;">
+              <div class="panel-title emerald"><span>AUTHENTIC RADIO LOG &amp; 11-PHASE LOOP</span><span>MLG_Checkpoint</span></div>
+              <div class="kv-list">
+                <div class="kv-row"><span class="kv-k mono">[0.65s] LANDER</span><span class="kv-v" style="font-weight:400; color:#cbd5e1;">"Descent engines green. 12 m to pad."</span></div>
+                <div class="kv-row"><span class="kv-k mono">[12.6s] EARTH</span><span class="kv-v" style="font-weight:400; color:#fbbf24;">"No more launch windows. Keep seeds cold."</span></div>
+                <div class="kv-row"><span class="kv-k mono">[15.8s] EARTH</span><span class="kv-v" style="font-weight:700; color:#34d399;">"Make something grow."</span></div>
+                <div class="kv-row"><span class="kv-k mono">[22.9s] ASTER 1</span><span class="kv-v" style="font-weight:400; color:#f87171;">"Earth? ... Earth, come in."</span></div>
+              </div>
+              <div class="sub-note" style="font-size:11px;">
+                <strong>Loop:</strong> <span class="mono" style="color:var(--emerald-hi);">Planning(8/14) → Repair → Plant → Grow → IceRun → Defend → CommsRun → FinalDefense → Transmit → Won/Lost</span>
+              </div>
+            </div>
+
+            <div class="grid-2 morph-in morph-d4" style="height:122px; gap:10px; flex-shrink:0;">
+              <div class="shot-card" onclick="openLightboxBySrc('../Assets/Tripo/Previews/HeavyDropship_sheet.png')">
+                <img src="../Assets/Tripo/Previews/HeavyDropship_sheet.png" alt="Heavy Dropship 3D">
+                <div class="shot-caption"><div><div class="shot-title">Heavy Cargo Dropship (Tripo)</div><div class="shot-meta">HeavyDropship_sheet.png</div></div></div>
+              </div>
+              <div class="shot-card" onclick="openLightboxBySrc('Final_Screenshots/HighresScreenshot00012.png')">
+                <img src="Final_Screenshots/HighresScreenshot00012.png" alt="Earth Tectonic Rupture">
+                <div class="shot-caption"><div><div class="shot-title">Earth Core Rupture (Vulkan)</div><div class="shot-meta">HighresScreenshot00012.png</div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== SLIDE 3: NASA OPEN DATA MARS PHYSICS ==================== -->
+    <section class="slide" data-title="NASA Mars Physics & Storms" data-desc="Real NASA Mars Facts constants (0.38G, 6.1 mbar CO2, -22C..-78C) and live Dust Squall solar simulator.">
+      <div class="slide-header">
+        <div>
+          <div class="slide-kicker"><span class="dot-live"></span> 03 // NASA OPEN DATA AT THE CORE — MARS PHYSICS</div>
+          <h1 class="slide-h1">0.38G EVA Physics, 6.1 mbar CO₂ &amp; Dust Squall Derating</h1>
+        </div>
+        <span class="slide-badge cyan">science.nasa.gov/mars/facts</span>
+      </div>
+      <div class="slide-body">
+        <div class="grid-55-45">
+          <div style="display:flex; flex-direction:column; gap:10px; min-height:0;">
+            <div class="grid-2 morph-in morph-d1" style="height:auto;">
+              <div class="panel accent-ochre">
+                <div class="panel-title ochre"><span>EXTERIOR EVA</span><span>UNPRESSURIZED</span></div>
+                <div class="kv-list">
+                  <div class="kv-row"><span class="kv-k">GravityRatio</span><span class="kv-v" style="color:var(--amber);">0.38 G</span></div>
+                  <div class="kv-row"><span class="kv-k">OutsidePressureMbar</span><span class="kv-v">6.1 mbar (95% CO₂)</span></div>
+                  <div class="kv-row"><span class="kv-k">OutsideTempC</span><span class="kv-v">-22°C .. -78°C</span></div>
+                  <div class="kv-row"><span class="kv-k">Suit O₂ Drain</span><span class="kv-v">0.16/s × Thermal</span></div>
+                </div>
+              </div>
+              <div class="panel accent-emerald">
+                <div class="panel-title emerald"><span>HABITAT / BIO-BAY</span><span>PRESSURIZED</span></div>
+                <div class="kv-list">
+                  <div class="kv-row"><span class="kv-k">Gravity (Mag-Boot)</span><span class="kv-v" style="color:var(--emerald-hi);">1.00 G</span></div>
+                  <div class="kv-row"><span class="kv-k">Zone Pressure</span><span class="kv-v">1013.0 mbar</span></div>
+                  <div class="kv-row"><span class="kv-k">Zone Temp</span><span class="kv-v">21°C / 6°C</span></div>
+                  <div class="kv-row"><span class="kv-k">Suit O₂ Refill</span><span class="kv-v">+5.0 / sec</span></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel accent-cyan morph-in morph-d2" style="flex:1; justify-content:space-between;">
+              <div class="panel-title"><span>LIVE DUST SQUALL SIMULATOR (FMLGResourceModel)</span><span id="stormLabel" class="code-pill ochre">STORM: 35%</span></div>
+              <div style="display:flex; align-items:center; gap:12px;">
+                <span class="mono" style="font-size:11px; color:var(--text-muted); white-space:nowrap;">DustStormIntensity:</span>
+                <input type="range" id="stormSlider" min="0" max="100" value="35">
+              </div>
+              <div class="grid-3">
+                <div style="background:rgba(5,9,16,0.75); padding:8px; border-radius:6px; border:1px solid rgba(56,189,248,0.18);">
+                  <div class="sub-note" style="font-size:10px;">Solar Efficiency</div>
+                  <div class="big-num cyan" id="solarEffVal" style="font-size:20px;">81%</div>
+                  <div class="sub-note" style="font-size:9.5px;">Floor: 45% Peak</div>
+                </div>
+                <div style="background:rgba(5,9,16,0.75); padding:8px; border-radius:6px; border:1px solid rgba(224,122,56,0.22);">
+                  <div class="sub-note" style="font-size:10px;">Grid (2 Units)</div>
+                  <div class="big-num ochre" id="powerGenVal" style="font-size:20px;">+4.85/s</div>
+                  <div class="sub-note" style="font-size:9.5px;">3.0/s × Eff</div>
+                </div>
+                <div style="background:rgba(5,9,16,0.75); padding:8px; border-radius:6px; border:1px solid rgba(16,185,129,0.22);">
+                  <div class="sub-note" style="font-size:10px;">Thermal Load</div>
+                  <div class="big-num emerald" id="thermalLoadVal" style="font-size:20px;">1.18×</div>
+                  <div class="sub-note" style="font-size:9.5px;">Suit Heater Scale</div>
+                </div>
+              </div>
+              <div class="sub-note" style="font-size:11px;">
+                <span class="code-pill">ComputeSolarEfficiency(Dust) = Lerp(1.0, 0.45, Dust)</span> — forces strategic turret standby toggling (<span class="mono">0.5 pwr/s</span>) &amp; NW <span class="code-pill">SolarSub</span> grid boost.
+              </div>
+            </div>
+          </div>
+
+          <div class="panel accent-ochre morph-in morph-d2" style="padding:10px; justify-content:space-between;">
+            <div class="panel-title ochre"><span>MARS MIE SCATTERING &amp; SOLAR ATTENUATION</span><span>LIVE PARTICLE FIELD</span></div>
+            <div class="canvas-box" style="flex:1;">
+              <canvas id="canvasDustField"></canvas>
+              <div class="canvas-hud-top">
+                <span style="color:#fb923c;">BUTTERSCOTCH IRON-OXIDE FOG</span>
+                <span id="dustBadgeHud" class="code-pill ochre">MODERATE SQUALL</span>
+              </div>
+            </div>
+            <svg viewBox="0 0 420 146" style="width:100%; height:auto; flex-shrink:0;">
+              <rect width="420" height="146" rx="5" fill="#050910"/>
+              <path d="M44 16 V118 H396" fill="none" stroke="#334155" stroke-width="1.2"/>
+              <line x1="44" y1="72" x2="396" y2="72" stroke="#f59e0b" stroke-width="1" stroke-dasharray="4 3"/>
+              <text x="250" y="67" fill="#f59e0b" font-family="monospace" font-size="9">45% SOLAR FLOOR</text>
+              <path d="M44 16 L396 72" fill="none" stroke="#38bdf8" stroke-width="2.5"/>
+              <polygon points="44,16 396,72 396,118 44,118" fill="rgba(56,189,248,0.12)"/>
+              <path d="M44 98 Q220 80 396 44" fill="none" stroke="#e07a38" stroke-width="2"/>
+              <line id="stormCursor" x1="167" y1="16" x2="167" y2="118" stroke="#34d399" stroke-width="1.5" stroke-dasharray="3 3"/>
+              <circle id="stormDotSolar" cx="167" cy="35.6" r="5" fill="#38bdf8" stroke="#fff" stroke-width="1.5"/>
+              <text x="44" y="135" fill="#94a3b8" font-family="monospace" font-size="9">0% Clear Sky</text>
+              <text x="195" y="135" fill="#94a3b8" font-family="monospace" font-size="9">50% Dust Squall</text>
+              <text x="336" y="135" fill="#fb923c" font-family="monospace" font-size="9">100% Peak</text>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== SLIDE 4: 3D CRISPR DNA MORPH & SABATIER REACTOR ==================== -->
+    <section class="slide" data-title="3D CRISPR & Sabatier Lab" data-desc="Interactive 3D morphing CRISPR DNA helix (CRY/PER/XER/PHO), Sabatier 2.2x H2O synthesis, and NASA crop science.">
+      <div class="slide-header">
+        <div>
+          <div class="slide-kicker"><span class="dot-live"></span> 04 // CLOSED-LOOP BIO-ENGINEERING (NASA DEEP SPACE CROPS)</div>
+          <h1 class="slide-h1">3D CRISPR Gene Sequencer &amp; Sabatier H₂O Reactor</h1>
+        </div>
+        <span class="slide-badge">MLGGeneTrait &amp; SabatierYieldMult = 2.2×</span>
+      </div>
+      <div class="slide-body">
+        <div class="grid-55-45">
+          <div style="display:flex; flex-direction:column; gap:9px; min-height:0;">
+            <div class="panel accent-emerald morph-in morph-d1">
+              <div class="panel-title emerald"><span>CRISPR TRAIT MATRIX (GeneLab @ 560, 430, 60)</span><span>CLICK TO MORPH 3D DNA</span></div>
+              <div class="grid-2" style="gap:7px;">
+                <button class="btn-chip active" data-gene="CRY" style="text-align:left; padding:6px 8px;">
+                  <div style="font-weight:700;">[CRY] Cryo / Low-P Shield</div>
+                  <div style="font-size:9.5px; opacity:0.85;">-55% cryo &amp; pressure decay</div>
+                </button>
+                <button class="btn-chip active" data-gene="PER" style="text-align:left; padding:6px 8px;">
+                  <div style="font-weight:700;">[PER] Perchlorate Detox</div>
+                  <div style="font-size:9.5px; opacity:0.85;">+50% regolith growth speed</div>
+                </button>
+                <button class="btn-chip" data-gene="XER" style="text-align:left; padding:6px 8px;">
+                  <div style="font-weight:700;">[XER] Xerophyte Retention</div>
+                  <div style="font-size:9.5px; opacity:0.85;">-45% plant H₂O drain</div>
+                </button>
+                <button class="btn-chip" data-gene="PHO" style="text-align:left; padding:6px 8px;">
+                  <div style="font-weight:700;">[PHO] Red-Spectrum Yield</div>
+                  <div style="font-size:9.5px; opacity:0.85;">+1 seed harvest &amp; +0.35 O₂/s</div>
+                </button>
+              </div>
+              <div class="grid-3">
+                <div style="background:rgba(5,9,16,0.75); padding:6px; border-radius:4px;">
+                  <div style="font-size:9.5px; color:var(--text-muted);">Active Splice</div>
+                  <div class="mono" id="geneComboOut" style="font-size:12px; font-weight:700; color:var(--emerald-hi);">GENE:CRY+PER</div>
+                </div>
+                <div style="background:rgba(5,9,16,0.75); padding:6px; border-radius:4px;">
+                  <div style="font-size:9.5px; color:var(--text-muted);">Seed → Mature</div>
+                  <div class="mono" id="geneGrowTime" style="font-size:12.5px; font-weight:700; color:var(--cyan-hi);">50.0 s</div>
+                </div>
+                <div style="background:rgba(5,9,16,0.75); padding:6px; border-radius:4px;">
+                  <div style="font-size:9.5px; color:var(--text-muted);">H₂O / O₂ Bonus</div>
+                  <div class="mono" id="geneWaterUse" style="font-size:12px; font-weight:700; color:var(--amber);">0.10 L/s | +0</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel accent-cyan morph-in morph-d2">
+              <div class="panel-title"><span>SABATIER REACTOR (560, -430, 60)</span><span>4H₂ + CO₂ → CH₄ + 2H₂O</span></div>
+              <div class="kv-list">
+                <div class="kv-row"><span class="kv-k">Ice Multiplication (<span class="mono">SabatierYieldMult</span>)</span><span class="kv-v" style="color:var(--cyan-hi);">2.2× H₂O (17.6 L / ice)</span></div>
+                <div class="kv-row"><span class="kv-k">Passive CO₂ Condensation</span><span class="kv-v" style="color:var(--emerald-hi);">+0.35 L/s (-0.35 pwr/s)</span></div>
+                <div class="kv-row"><span class="kv-k">Greenhouse Transpiration Loop</span><span class="kv-v">60% H₂O Recycled (Sealed)</span></div>
+              </div>
+            </div>
+
+            <div class="grid-2 morph-in morph-d3" style="height:106px; gap:10px; flex-shrink:0;">
+              <div class="shot-card" onclick="openLightboxBySrc('../Assets/Tripo/Previews/BotanicalPod_sheet.png')">
+                <img src="../Assets/Tripo/Previews/BotanicalPod_sheet.png" alt="Botanical Pod">
+                <div class="shot-caption"><div><div class="shot-title">Botanical Pod 3D</div><div class="shot-meta">BotanicalPod_sheet.png</div></div></div>
+              </div>
+              <div class="shot-card" onclick="openLightboxBySrc('Final_Screenshots/HighresScreenshot00019.png')">
+                <img src="Final_Screenshots/HighresScreenshot00019.png" alt="Greenhouse">
+                <div class="shot-caption"><div><div class="shot-title">Greenhouse Bio-Bay</div><div class="shot-meta">Vulkan SM5 Render</div></div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel accent-emerald morph-in morph-d2" style="padding:10px; justify-content:space-between;">
+            <div class="canvas-box" style="flex:1;">
+              <canvas id="canvasDNA3D"></canvas>
+              <div class="canvas-hud-top">
+                <span>3D CRISPR DOUBLE HELIX // DRAG TO SPIN</span>
+                <span class="code-pill emerald" id="dnaHudTag">CRY+PER SPLICED</span>
+              </div>
+              <div class="canvas-hud-overlay">
+                <span>FMLGPlantModel::Tick(Dt, GeneMask)</span>
+                <span>0.35 O₂/s @ PHO</span>
+              </div>
+            </div>
+            <div class="sub-note" style="font-size:11px; flex-shrink:0;">
+              <strong style="color:#fff;">NASA Crop Science:</strong> Martian regolith contains toxic perchlorates &amp; low nutrients; Codex explicitly separates gameplay growth speed from real-world botany.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== SLIDE 5: 3D JEZERO OUTPOST DIORAMA <-> 2D MAP MORPH ==================== -->
+    <section class="slide" data-title="Outpost 3D Diorama & DropShip" data-desc="Morphing 3D Jezero Outpost Diorama vs 2D Blueprint Map with Enterable DropShip & 4 exterior compounds.">
+      <div class="slide-header">
+        <div>
+          <div class="slide-kicker"><span class="dot-live"></span> 05 // OUTPOST ARCHITECTURE &amp; ENTERABLE DROPSHIP</div>
+          <h1 class="slide-h1">Jezero Basin 3D Diorama &amp; 4 Functional Compounds</h1>
+        </div>
+        <div style="display:flex; gap:6px; align-items:center;">
+          <button class="btn-chip active" id="btnMode3D" onclick="setOutpostMode('3d')">3D Orbit Diorama</button>
+          <button class="btn-chip" id="btnMode2D" onclick="setOutpostMode('2d')">2D Blueprint Map</button>
+        </div>
+      </div>
+      <div class="slide-body">
+        <div class="grid-55-45">
+          <div class="panel accent-ochre morph-in morph-d1" style="padding:10px;">
+            <div class="view-morph-wrap">
+              <div class="view-layer active" id="outpostView3D">
+                <div class="canvas-box" style="height:100%;">
+                  <canvas id="canvasOutpost3D"></canvas>
+                  <div class="canvas-hud-top">
+                    <span>3D JEZERO BASIN DIORAMA // DRAG TO ORBIT</span>
+                    <span class="code-pill ochre">CALDERA R~4000cm</span>
+                  </div>
+                  <div class="canvas-hud-overlay">
+                    <span>AMBER: DROPSHIP | CYAN: ICE+SABATIER</span>
+                    <span>GREEN: HUB+BIO | VIOLET: COMMS</span>
+                  </div>
+                </div>
+              </div>
+              <div class="view-layer" id="outpostView2D">
+                <svg viewBox="-380 -310 760 620" style="width:100%; height:100%; background:#05080d; border-radius:6px;">
+                  <polygon points="-350,-285 350,-285 350,285 -350,285" fill="none" stroke="#7c2d12" stroke-width="14" stroke-dasharray="28 10 14 8" opacity="0.6"/>
+                  <text x="0" y="-262" text-anchor="middle" fill="#fb923c" font-family="monospace" font-size="11" letter-spacing="2">JEZERO BASALT CALDERA CLIFFS (R ~ 3600..4500 cm)</text>
+                  <path d="M-340 0 H340 M0 -255 V255" stroke="rgba(56,189,248,0.08)" stroke-width="1"/>
+                  <polyline points="0,205 0,70 -35,70" fill="none" stroke="#38bdf8" stroke-width="3" stroke-dasharray="6 4"/>
+                  <g style="cursor:pointer;" onclick="selectCompound('hub')">
+                    <rect x="-95" y="-36" width="80" height="72" rx="6" fill="#0d2520" stroke="#10b981" stroke-width="2"/>
+                    <rect x="-15" y="-14" width="30" height="28" fill="#0d1b2a" stroke="#38bdf8" stroke-width="1.5"/>
+                    <rect x="15" y="-36" width="80" height="72" rx="6" fill="#0a2e22" stroke="#34d399" stroke-width="2"/>
+                    <text x="-55" y="4" text-anchor="middle" fill="#e6f0f8" font-family="monospace" font-size="10" font-weight="bold">HABITAT</text>
+                    <text x="55" y="4" text-anchor="middle" fill="#34d399" font-family="monospace" font-size="9.5" font-weight="bold">GREENHOUSE</text>
+                  </g>
+                  <g style="cursor:pointer;" onclick="selectCompound('dropship')">
+                    <rect x="-250" y="65" width="115" height="68" rx="8" fill="#2a160c" stroke="#f59e0b" stroke-width="2.2"/>
+                    <text x="-192" y="96" text-anchor="middle" fill="#fbbf24" font-family="monospace" font-size="10" font-weight="bold">DROPSHIP</text>
+                    <text x="-192" y="112" text-anchor="middle" fill="#fed7aa" font-family="monospace" font-size="8.5">(-1850,-900)</text>
+                  </g>
+                  <g style="cursor:pointer;" onclick="selectCompound('icerig')">
+                    <rect x="-70" y="185" width="140" height="58" rx="6" fill="#0c1f33" stroke="#38bdf8" stroke-width="2"/>
+                    <text x="0" y="211" text-anchor="middle" fill="#38bdf8" font-family="monospace" font-size="10" font-weight="bold">CRYO-ICE RIG</text>
+                    <text x="0" y="227" text-anchor="middle" fill="#bae6fd" font-family="monospace" font-size="8.5">(0, -2100, 60)</text>
+                  </g>
+                  <g style="cursor:pointer;" onclick="selectCompound('comms')">
+                    <rect x="158" y="-85" width="132" height="62" rx="6" fill="#17122b" stroke="#a855f7" stroke-width="2"/>
+                    <text x="224" y="-56" text-anchor="middle" fill="#c084fc" font-family="monospace" font-size="10" font-weight="bold">COMMS ARRAY</text>
+                    <text x="224" y="-40" text-anchor="middle" fill="#e9d5ff" font-family="monospace" font-size="8.5">(2000, 400, 60)</text>
+                  </g>
+                  <g style="cursor:pointer;" onclick="selectCompound('solar')">
+                    <rect x="-245" y="-185" width="132" height="60" rx="6" fill="#122118" stroke="#10b981" stroke-width="2"/>
+                    <text x="-179" y="-158" text-anchor="middle" fill="#34d399" font-family="monospace" font-size="10" font-weight="bold">NW SOLAR SUB</text>
+                    <text x="-179" y="-142" text-anchor="middle" fill="#a7f3d0" font-family="monospace" font-size="8.5">(-1700, 1400)</text>
+                  </g>
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; gap:10px; min-height:0;">
+            <div class="panel accent-cyan morph-in morph-d2" style="flex:1; justify-content:space-between;">
+              <div>
+                <div class="panel-title"><span id="compTag">WEST COMPOUND // LANDING SITE</span><span id="compCoords" class="code-pill">(-1850, -900, 60)</span></div>
+                <h2 id="compName" style="font-size:17.5px; color:#fff; margin:4px 0;">Enterable DropShip Compound</h2>
+                <p id="compDesc" class="sub-note" style="font-size:11.5px;">
+                  900×600×450 cm spacecraft with heatshield hull, +X ground-level boarding ramp, walkable cockpit/cargo interior, consoles &amp; interactive DropLocker.
+                </p>
+              </div>
+              <div class="kv-list" id="compSpecs">
+                <div class="kv-row"><span class="kv-k">Walkability</span><span class="kv-v">Full interior NavMesh + ramp</span></div>
+                <div class="kv-row"><span class="kv-k">Interactive Device</span><span class="kv-v">[E] LOCKER:KIT+LOG</span></div>
+                <div class="kv-row"><span class="kv-k">Prologue Sync</span><span class="kv-v">DropShip-tagged descent</span></div>
+              </div>
+              <div style="display:flex; flex-wrap:wrap; gap:5px;">
+                <button class="btn-chip active" data-comp="dropship" onclick="selectCompound('dropship')">DropShip</button>
+                <button class="btn-chip" data-comp="hub" onclick="selectCompound('hub')">Hub &amp; GeneLab</button>
+                <button class="btn-chip" data-comp="icerig" onclick="selectCompound('icerig')">Cryo-Ice Rig</button>
+                <button class="btn-chip" data-comp="comms" onclick="selectCompound('comms')">Comms Array</button>
+                <button class="btn-chip" data-comp="solar" onclick="selectCompound('solar')">NW Solar Sub</button>
+              </div>
+            </div>
+
+            <div class="grid-2 morph-in morph-d3" style="height:112px; gap:10px; flex-shrink:0;">
+              <div class="shot-card" onclick="openLightboxBySrc('Final_Screenshots/HighresScreenshot00018.png')">
+                <img src="Final_Screenshots/HighresScreenshot00018.png" alt="Enterable DropShip Cabin">
+                <div class="shot-caption"><div><div class="shot-title">Enterable DropShip Cabin</div><div class="shot-meta">HighresScreenshot00018.png</div></div></div>
+              </div>
+              <div class="shot-card" onclick="openLightboxBySrc('Final_Screenshots/HighresScreenshot00014.png')">
+                <img src="Final_Screenshots/HighresScreenshot00014.png" alt="Heavy Dropship Pad">
+                <div class="shot-caption"><div><div class="shot-title">Heavy Dropship &amp; Pad</div><div class="shot-meta">HighresScreenshot00014.png</div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== SLIDE 6: 3D THREAT HOLOGRAM MORPH & COMBAT ECOLOGY ==================== -->
+    <section class="slide" data-title="3D Combat & Threat Ecology" data-desc="Morphing 3D alien hologram, Blender creature contact sheets, 0.38G Breaker fling, and MK-IV Pulse Rifle.">
+      <div class="slide-header">
+        <div>
+          <div class="slide-kicker"><span class="dot-live"></span> 06 // TACTICAL COMBAT, 3D THREAT HOLOGRAM &amp; HUD</div>
+          <h1 class="slide-h1">Tier-Scaled Alien Ecology &amp; Ray-Aligned Ballistics</h1>
+        </div>
+        <div style="display:flex; gap:6px;">
+          <button class="btn-chip active-crimson" id="btnEnemyRaider" onclick="selectEnemy('raider')">RAIDER</button>
+          <button class="btn-chip" id="btnEnemyGunner" onclick="selectEnemy('gunner')">GUNNER</button>
+          <button class="btn-chip" id="btnEnemyBreaker" onclick="selectEnemy('breaker')">BREAKER</button>
+        </div>
+      </div>
+      <div class="slide-body">
+        <div class="grid-45-55">
+          <div style="display:flex; flex-direction:column; gap:10px; min-height:0;">
+            <div class="panel accent-crimson morph-in morph-d1" style="flex:1; padding:10px;">
+              <div class="canvas-box" style="height:100%;">
+                <canvas id="canvasEnemy3D"></canvas>
+                <div class="canvas-hud-top">
+                  <span id="enemyHoloTitle">TIER 1 // RAIDER HOLOGRAM</span>
+                  <span class="code-pill" id="enemyCritTag">1.75× HEAD CRIT</span>
+                </div>
+                <div class="canvas-hud-overlay">
+                  <span>DRAG TO INSPECT 3D SILHOUETTE</span>
+                  <span id="enemyKnockTag">KNOCKBACK: 320 cm/s</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel accent-cyan morph-in morph-d2" style="flex-shrink:0;">
+              <div class="panel-title"><span>MK-IV PULSE RIFLE &amp; LETTER-KEYCAP HUD</span><span>RAY CONVERGED</span></div>
+              <div class="kv-list">
+                <div class="kv-row"><span class="kv-k">Spread (Hip / ADS / First-Tap)</span><span class="kv-v">0.35° / 0.05° / 0.0°</span></div>
+                <div class="kv-row"><span class="kv-k">Fire Rate / Base Hit / Corpses</span><span class="kv-v">540 RPM | 20 HP | Zero-Block Die()</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; gap:10px; min-height:0;">
+            <div class="panel accent-ochre morph-in morph-d2">
+              <div class="panel-title ochre"><span id="enemyRoleTitle">AGILE WATER-LINE FLANKER</span><span id="enemyStatBadge" class="code-pill">50 HP | 520 cm/s</span></div>
+              <div class="grid-3" style="gap:8px;">
+                <div style="background:rgba(5,9,16,0.75); padding:6px; border-radius:5px; text-align:center;">
+                  <div class="mono" id="enDmgPlayer" style="font-size:17px; font-weight:700; color:#f87171;">10 HP</div>
+                  <div style="font-size:9.5px; color:var(--text-muted);">Player Hit</div>
+                </div>
+                <div style="background:rgba(5,9,16,0.75); padding:6px; border-radius:5px; text-align:center;">
+                  <div class="mono" id="enDmgStruct" style="font-size:17px; font-weight:700; color:var(--amber);">14 HP</div>
+                  <div style="font-size:9.5px; color:var(--text-muted);">Structure Hit</div>
+                </div>
+                <div style="background:rgba(5,9,16,0.75); padding:6px; border-radius:5px; text-align:center;">
+                  <div class="mono" id="enTelegraph" style="font-size:17px; font-weight:700; color:var(--cyan-hi);">0.7 s</div>
+                  <div style="font-size:9.5px; color:var(--text-muted);">Telegraph</div>
+                </div>
+              </div>
+              <p class="sub-note" id="enemyDescText" style="font-size:11.5px;">
+                Targets Water Tank/Pipe (4.0) &amp; lunges within 9 m. Any hit during telegraph staggers &amp; cancels lunge. Lethal alien hits trigger a 1.55s visor-breach maul sequence (<span class="mono">StartDyingSequence</span>).
+              </p>
+            </div>
+
+            <div class="grid-2 morph-in morph-d3" style="flex:1; min-height:0; gap:10px;">
+              <div class="shot-card" onclick="openLightboxBySrc(currentEnemySheet)">
+                <img id="enemySheetImg" src="../Assets/Creatures/Production/Previews/Raider_contact_sheet.png" alt="Creature Sheet">
+                <div class="shot-caption">
+                  <div><div class="shot-title" id="enemySheetCap">Raider Rig &amp; Anims</div><div class="shot-meta" id="enemySheetFile">Raider_contact_sheet.png</div></div>
+                  <span class="code-pill">BLENDER QA</span>
+                </div>
+              </div>
+              <div class="shot-card" onclick="openLightboxBySrc('../Assets/Tripo/Previews/PulseRifle_sheet.png')">
+                <img src="../Assets/Tripo/Previews/PulseRifle_sheet.png" alt="Pulse Rifle">
+                <div class="shot-caption">
+                  <div><div class="shot-title">MK-IV Pulse Rifle 3D</div><div class="shot-meta">PulseRifle_sheet.png</div></div>
+                  <span class="code-pill">SK_FPGun</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== SLIDE 7: LIVE VULKAN + 3D ASSET GALLERY & VERIFICATION ==================== -->
+    <section class="slide" data-title="Visual Evidence & Verification" data-desc="12+ switchable Vulkan SM5 & 3D Asset gallery renders alongside headless engineering verification & NASA citations.">
+      <div class="slide-header">
+        <div>
+          <div class="slide-kicker"><span class="dot-live"></span> 07 // VISUAL EVIDENCE GALLERY &amp; VERIFIED ENGINEERING</div>
+          <h1 class="slide-h1">Live Vulkan SM5 Captures, 3D Pipeline &amp; Test Ledger</h1>
+        </div>
+        <div style="display:flex; gap:6px;">
+          <button class="btn-chip active-ochre" onclick="openVideoModal()">▶ Watch 42s Trailer</button>
+          <button class="btn-chip active" id="tabGalVulkan" onclick="setSlide7Gallery('vulkan')">Vulkan SM5 (6)</button>
+          <button class="btn-chip" id="tabGalAssets" onclick="setSlide7Gallery('assets')">3D Asset Sheets (6)</button>
+        </div>
+      </div>
+      <div class="slide-body">
+        <div class="grid-55-45">
+          <!-- Left: Switchable 6-up High-Res Gallery (12 images total + Lightbox!) -->
+          <div class="panel accent-cyan morph-in morph-d1" style="padding:10px; justify-content:space-between;">
+            <div class="panel-title">
+              <span id="galHeaderTitle">IN-ENGINE VULKAN SM5 CAPTURES (CLICK TO ZOOM)</span>
+              <span class="code-pill" id="galCountTag">18 IMAGES IN LIGHTBOX</span>
+            </div>
+            <div class="gallery-grid-3x2" id="slide7GalleryGrid"></div>
+          </div>
+
+          <!-- Right: Verified Engineering Test Matrix + NASA Citations -->
+          <div style="display:flex; flex-direction:column; gap:9px; min-height:0;">
+            <div class="panel accent-emerald morph-in morph-d2" style="flex:1; justify-content:space-between;">
+              <div class="panel-title emerald"><span>AUTOMATED VERIFICATION LEDGER</span><span id="verifyBadge" class="code-pill emerald">ALL SUITES PASS</span></div>
+              <table class="data-table">
+                <thead><tr><th>Suite / Command</th><th>Verified Run</th><th>Status</th></tr></thead>
+                <tbody>
+                  <tr><td class="mono">Build.sh MarsLastGreenEditor</td><td class="mono">exit 0 (30.07s)</td><td><span class="status-pass" id="stBuild">PASS</span></td></tr>
+                  <tr><td class="mono">Automation RunTests (Models/Crits/Audit)</td><td class="mono">13/13 Success</td><td><span class="status-pass" id="stAuto">PASS</span></td></tr>
+                  <tr><td class="mono">mlg.validate + measure_creature_anim_scale</td><td class="mono">anomalies=0 · bad=0 (19)</td><td><span class="status-pass" id="stVal">PASS</span></td></tr>
+                  <tr><td class="mono">mlg.selftest (-60s Leak/Kills)</td><td class="mono">exit 0 · 2 kills · 59.4→0</td><td><span class="status-pass" id="stSelf">PASS</span></td></tr>
+                  <tr><td class="mono">mlg.enemytest (-120s AI/LOS/Slam)</td><td class="mono">15/15 PASS (failures=0)</td><td><span class="status-pass" id="stEnemy">PASS</span></td></tr>
+                  <tr><td class="mono">mlg.missiontest (-400s 11 Phases)</td><td class="mono">21/21 PASS (failures=0)</td><td><span class="status-pass" id="stMission">PASS</span></td></tr>
+                  <tr><td class="mono">mlg.uitest (-6s Menus/KeySwap)</td><td class="mono">31/31 PASS (failures=0)</td><td><span class="status-pass" id="stUI">PASS</span></td></tr>
+                  <tr><td class="mono">mlg.shots (RTX 3070 Vulkan SM5)</td><td class="mono">21 frames + 42.4s MP4</td><td><span class="status-pass" id="stShots">PASS</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="panel accent-ochre morph-in morph-d3" style="flex-shrink:0;">
+              <div class="panel-title ochre"><span>NASA OPEN DATA SOURCES &amp; HONESTY</span><span>CODEX</span></div>
+              <div class="sub-note" style="font-size:10.5px; line-height:1.38;">
+                • <strong>Mars Facts:</strong> <span class="mono">science.nasa.gov/mars/facts/</span><br>
+                • <strong>Deep-Space Food Crops:</strong> <span class="mono">nasa.gov/.../deep-space-food-crops/</span><br>
+                • <strong>Honesty:</strong> Earth breakup &amp; aliens are fiction; plant/water times are accelerated for 30–60 min gameplay. Linux Editor verified; Windows .exe requires VS2022.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<!-- Bottom Navigation -->
+<div class="nav-bar">
+  <button class="nav-btn" onclick="prevSlide()">← Prev</button>
+  <div class="nav-dots" id="navDots"></div>
+  <span class="slide-counter"><span id="curNum">1</span> / <span id="totNum">7</span></span>
+  <button class="nav-btn" onclick="nextSlide()">Next →</button>
+  <button class="nav-btn" onclick="toggleIndex()">☰ Index (G)</button>
+  <button class="nav-btn" onclick="openVideoModal()" style="border-color:rgba(16,185,129,0.5); color:var(--emerald-hi);">▶ Trailer</button>
+</div>
+
+<!-- Index Modal -->
+<div class="index-overlay" id="indexOverlay" onclick="if(event.target===this) toggleIndex(false)">
+  <div class="index-modal">
+    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-dim); padding-bottom:10px;">
+      <div>
+        <div class="mono" style="font-size:11px; color:var(--cyan-hi); letter-spacing:0.12em;">MISSION CONTROL // 7-SLIDE GLOBAL DECK</div>
+        <div style="font-size:18px; font-weight:700;">Mars: Last Green — NASA Space Apps Challenge</div>
+      </div>
+      <button class="nav-btn" onclick="toggleIndex(false)">✕ Close (Esc)</button>
+    </div>
+    <div class="index-grid" id="indexGrid"></div>
+  </div>
+</div>
+
+<!-- Promotional Trailer Video Modal -->
+<div class="lightbox" id="videoModal" onclick="if(event.target===this) closeVideoModal()">
+  <div style="display:flex; flex-direction:column; align-items:center; gap:10px; max-width:86vw;">
+    <div style="width:100%; display:flex; justify-content:space-between; align-items:center;">
+      <span class="mono" style="font-size:12px; color:var(--emerald-hi);">MARS: LAST GREEN // OFFICIAL HACKATHON TRAILER (42.4s · 720p H.264)</span>
+      <button class="nav-btn" onclick="closeVideoModal()">✕ Close (Esc)</button>
+    </div>
+    <video id="trailerPlayer" controls preload="metadata" style="max-width:82vw; max-height:74vh; border-radius:8px; border:1px solid var(--border-bright); background:#000;">
+      <source src="Mars_Last_Green_Trailer.mp4" type="video/mp4">
+    </video>
+  </div>
+</div>
+
+<!-- Lightbox with Next/Prev across ALL 18 images -->
+<div class="lightbox" id="lightbox" onclick="if(event.target===this) closeLightbox()">
+  <div class="lightbox-frame">
+    <button class="nav-btn" onclick="stepLightbox(-1)" style="height:40px; padding:0 14px;">←</button>
+    <img id="lightboxImg" src="" alt="Preview">
+    <button class="nav-btn" onclick="stepLightbox(1)" style="height:40px; padding:0 14px;">→</button>
+  </div>
+  <div class="lightbox-cap" id="lightboxCap"></div>
+  <div class="sub-note" style="font-size:11px;">Use ← / → to browse all 18 real images or press Esc / click backdrop to close</div>
+</div>
+
+<script>
+const slides = Array.from(document.querySelectorAll('.slide'));
+const total = slides.length;
+let current = 1;
+document.getElementById('totNum').textContent = total;
+const dotsWrap = document.getElementById('navDots');
+const indexGrid = document.getElementById('indexGrid');
+
+slides.forEach((s, idx) => {
+  const n = idx + 1;
+  const dot = document.createElement('div');
+  dot.className = 'nav-dot' + (n === 1 ? ' active' : '');
+  dot.title = `${n}. ${s.dataset.title || ''}`;
+  dot.onclick = () => goSlide(n);
+  dotsWrap.appendChild(dot);
+
+  const card = document.createElement('div');
+  card.className = 'index-card' + (n === 1 ? ' current' : '');
+  card.innerHTML = `<div class="index-num">SLIDE 0${n}</div><div class="index-title">${s.dataset.title || ''}</div><div class="index-desc">${s.dataset.desc || ''}</div>`;
+  card.onclick = () => { goSlide(n); toggleIndex(false); };
+  indexGrid.appendChild(card);
+});
+
+function goSlide(n) {
+  current = Math.max(1, Math.min(total, n));
+  slides.forEach((s, i) => s.classList.toggle('active', i === current - 1));
+  document.getElementById('curNum').textContent = current;
+  document.getElementById('progressBar').style.width = ((current / total) * 100) + '%';
+  Array.from(dotsWrap.children).forEach((d, i) => d.classList.toggle('active', i === current - 1));
+  Array.from(indexGrid.children).forEach((c, i) => c.classList.toggle('current', i === current - 1));
+}
+function nextSlide() { goSlide(current + 1); }
+function prevSlide() { goSlide(current - 1); }
+function toggleIndex(force) {
+  const el = document.getElementById('indexOverlay');
+  el.classList.toggle('open', force !== undefined ? force : !el.classList.contains('open'));
+}
+
+/* ==================== 18 REAL PROJECT IMAGES (LIGHTBOX + SLIDE 7 GALLERY) ==================== */
+const galleryImages = [
+  { src: 'Final_Screenshots/HighresScreenshot00010.png', title: '01 // Earth Blue Marble', meta: 'Screenshot 00010', cap: '01 // Prologue Earth Relay — Orbital Blue Marble Telemetry' },
+  { src: 'Final_Screenshots/HighresScreenshot00012.png', title: '02 // Earth Core Rupture', meta: 'Screenshot 00012', cap: '02 // Tectonic Breakup Morph & Magma Core Shatter' },
+  { src: 'Final_Screenshots/HighresScreenshot00014.png', title: '03 // Heavy Cargo Dropship', meta: 'Screenshot 00014', cap: '03 // Tripo Pro 12.6m NASA Heavy Cargo Dropship on Pad' },
+  { src: 'Final_Screenshots/HighresScreenshot00018.png', title: '04 // Enterable Cabin Deck', meta: 'Screenshot 00018', cap: '04 // Enterable DropShip Interior Cabin & Storage Deck' },
+  { src: 'Final_Screenshots/HighresScreenshot00019.png', title: '05 // Greenhouse Bio-Bay', meta: 'Screenshot 00019', cap: '05 // Pressurized Greenhouse & Hydroponic Bio-Bay' },
+  { src: 'Final_Screenshots/HighresScreenshot00017.png', title: '06 // Tri-Class Swarm Combat', meta: 'Screenshot 00017', cap: '06 // Active Combat — Breaker, Gunner LOS & Raider Lunge' },
+  { src: 'Final_Screenshots/HighresScreenshot00003.png', title: '07 // Habitat EVA & Z2 Suit', meta: 'Screenshot 00003', cap: '07 // Pressurized Habitat O₂ Scrubber & NASA Z2 Spacesuit' },
+  { src: 'Final_Screenshots/HighresScreenshot00016.png', title: '08 // Modular Compound', meta: 'Screenshot 00016', cap: '08 // Modular Habitat Entrance & Exteriors on Jezero Basin' },
+  { src: '../Assets/Props/Previews/Props_Devices_sheet.png', title: '8 Base Devices', meta: 'Props_Devices_sheet', cap: '3D Prop Pipeline // 8 Base Life-Support Devices (Blender PBR)' },
+  { src: '../Assets/Props/Previews/Props_Gameplay_sheet.png', title: 'Crops, Pickups & Pads', meta: 'Props_Gameplay_sheet', cap: '3D Prop Pipeline // Botanical Stages, Pickups & Defenses' },
+  { src: '../Assets/Tripo/Previews/HeavyDropship_sheet.png', title: 'NASA Heavy Dropship (Tripo)', meta: 'HeavyDropship_sheet', cap: '3D Hero Mesh // Tripo Pro Heavy Cargo Dropship (4-Angle QA)' },
+  { src: '../Assets/Tripo/Previews/BotanicalPod_sheet.png', title: 'Botanical Showcase Pod', meta: 'BotanicalPod_sheet', cap: '3D Hero Mesh // Greenhouse Botanical Showcase Pod' },
+  { src: '../Assets/Tripo/Previews/SentryTurret_sheet.png', title: 'Sentry Turret Pad', meta: 'SentryTurret_sheet', cap: '3D Defense // Perimeter Sentry Turret & Base Pad' },
+  { src: '../Assets/Tripo/Previews/PulseRifle_sheet.png', title: 'MK-IV Pulse Rifle', meta: 'PulseRifle_sheet', cap: '3D Weapon // MK-IV Pulse Rifle (SK_FPGun)' },
+  { src: '../Assets/Creatures/Production/Previews/Raider_contact_sheet.png', title: 'Raider Rig & Anims', meta: 'Raider_contact_sheet', cap: 'Tier 1 Creature // Raider Skeletal Rig & Animations' },
+  { src: '../Assets/Creatures/Production/Previews/Gunner_contact_sheet.png', title: 'Gunner Rig & Cover', meta: 'Gunner_contact_sheet', cap: 'Tier 2 Creature // Gunner Armed Flanker & Cover Pose' },
+  { src: '../Assets/Creatures/Production/Previews/Breaker_contact_sheet.png', title: 'Breaker Siege Anims', meta: 'Breaker_contact_sheet', cap: 'Tier 3 Creature // Breaker Armored Siege & Ground Slam' },
+  { src: '../Assets/Intro/inc11_preview.png', title: 'Earth / Core / Lander', meta: 'inc11_preview', cap: 'Prologue 3D Pipeline // Earth, Magma Core, Crust Ejecta & Lander' }
+];
+let lbIdx = 0;
+
+function openLightboxBySrc(src) {
+  const found = galleryImages.findIndex(g => g.src === src);
+  lbIdx = found >= 0 ? found : 0;
+  renderLightbox();
+  document.getElementById('lightbox').classList.add('open');
+}
+function renderLightbox() {
+  const item = galleryImages[lbIdx];
+  document.getElementById('lightboxImg').src = item.src;
+  document.getElementById('lightboxCap').textContent = `${item.cap}  (${lbIdx + 1}/${galleryImages.length})`;
+}
+function stepLightbox(dir) {
+  lbIdx = (lbIdx + dir + galleryImages.length) % galleryImages.length;
+  renderLightbox();
+}
+function closeLightbox() { document.getElementById('lightbox').classList.remove('open'); }
+function openVideoModal() {
+  const m = document.getElementById('videoModal');
+  const v = document.getElementById('trailerPlayer');
+  m.classList.add('open');
+  if (v) { v.currentTime = 0; v.play().catch(() => {}); }
+}
+function closeVideoModal() {
+  const m = document.getElementById('videoModal');
+  const v = document.getElementById('trailerPlayer');
+  if (v) v.pause();
+  m.classList.remove('open');
+}
+
+function setSlide7Gallery(mode) {
+  const grid = document.getElementById('slide7GalleryGrid');
+  document.getElementById('tabGalVulkan').classList.toggle('active', mode === 'vulkan');
+  document.getElementById('tabGalAssets').classList.toggle('active', mode === 'assets');
+  document.getElementById('galHeaderTitle').textContent = mode === 'vulkan'
+    ? 'IN-ENGINE VULKAN SM5 CAPTURES (CLICK TO ZOOM)'
+    : 'BLENDER & TRIPO 3D ASSET SHEETS (CLICK TO ZOOM)';
+  const items = mode === 'vulkan' ? galleryImages.slice(0, 6) : [galleryImages[8], galleryImages[9], galleryImages[10], galleryImages[12], galleryImages[14], galleryImages[16]];
+  grid.innerHTML = items.map(it => `
+    <div class="shot-card" onclick="openLightboxBySrc('${it.src}')">
+      <img src="${it.src}" alt="${it.title}">
+      <div class="shot-caption"><div><div class="shot-title">${it.title}</div><div class="shot-meta">${it.meta}</div></div></div>
+    </div>
+  `).join('');
+}
+setSlide7Gallery('vulkan');
+
+document.addEventListener('keydown', (e) => {
+  const lbOpen = document.getElementById('lightbox').classList.contains('open');
+  const vidOpen = document.getElementById('videoModal').classList.contains('open');
+  const idxOpen = document.getElementById('indexOverlay').classList.contains('open');
+  if (e.key === 'Escape') {
+    if (vidOpen) closeVideoModal();
+    else if (lbOpen) closeLightbox();
+    else if (idxOpen) toggleIndex(false);
+    return;
+  }
+  if (vidOpen) return;
+  if (lbOpen) {
+    if (e.key === 'ArrowRight') stepLightbox(1);
+    if (e.key === 'ArrowLeft') stepLightbox(-1);
+    return;
+  }
+  if (idxOpen) return;
+  if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); nextSlide(); }
+  else if (e.key === 'ArrowLeft') { e.preventDefault(); prevSlide(); }
+  else if (e.key === 'Home') { e.preventDefault(); goSlide(1); }
+  else if (e.key === 'End') { e.preventDefault(); goSlide(total); }
+  else if (e.key.toLowerCase() === 'g' || e.key.toLowerCase() === 'i') { e.preventDefault(); toggleIndex(); }
+});
+
+/* ==================== 3D ENGINE HELPERS ==================== */
+function fitCanvas(canvas) {
+  const r = canvas.getBoundingClientRect();
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  if (r.width > 0 && r.height > 0 && (canvas.width !== Math.round(r.width * dpr) || canvas.height !== Math.round(r.height * dpr))) {
+    canvas.width = Math.round(r.width * dpr);
+    canvas.height = Math.round(r.height * dpr);
+  }
+  return { w: canvas.width, h: canvas.height };
+}
+function rot3D(p, rx, ry) {
+  const cy = Math.cos(ry), sy = Math.sin(ry), cx = Math.cos(rx), sx = Math.sin(rx);
+  const x1 = p[0]*cy + p[2]*sy, z1 = -p[0]*sy + p[2]*cy;
+  const y2 = p[1]*cx - z1*sx, z2 = p[1]*sx + z1*cx;
+  return [x1, y2, z2];
+}
+function attachDragOrbit(canvas, state) {
+  let down = false, lx = 0, ly = 0;
+  canvas.addEventListener('pointerdown', e => { down = true; lx = e.clientX; ly = e.clientY; canvas.setPointerCapture(e.pointerId); });
+  canvas.addEventListener('pointermove', e => {
+    if (!down) return;
+    state.ry += (e.clientX - lx) * 0.009;
+    state.rx = Math.max(-1.2, Math.min(1.2, state.rx + (e.clientY - ly) * 0.009));
+    lx = e.clientX; ly = e.clientY;
+  });
+  window.addEventListener('pointerup', () => { down = false; });
+}
+
+/* ==================== 1. 3D MARS GLOBE ==================== */
+const marsState = { rx: 0.28, ry: 0.4 };
+const marsCanvas = document.getElementById('canvasMars3D');
+attachDragOrbit(marsCanvas, marsState);
+const marsPts = Array.from({ length: 400 }, (_, i) => {
+  const phi = Math.acos(1 - 2 * (i + 0.5) / 400), theta = Math.PI * (1 + Math.sqrt(5)) * i;
+  const c = 1 + Math.sin(theta * 3) * Math.cos(phi * 4) * 0.04;
+  return [Math.sin(phi)*Math.cos(theta)*c, Math.cos(phi)*c, Math.sin(phi)*Math.sin(theta)*c];
+});
+function drawMars3D(t) {
+  if (current !== 1) return;
+  const { w, h } = fitCanvas(marsCanvas); if (!w || !h) return;
+  const ctx = marsCanvas.getContext('2d'); ctx.clearRect(0, 0, w, h);
+  marsState.ry += 0.0045;
+  const cx = w/2, cy = h/2, rad = Math.min(w, h) * 0.31;
+  const glow = ctx.createRadialGradient(cx, cy, rad*0.65, cx, cy, rad*1.45);
+  glow.addColorStop(0, 'rgba(224,122,56,0.22)'); glow.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = glow; ctx.beginPath(); ctx.arc(cx, cy, rad*1.45, 0, Math.PI*2); ctx.fill();
+  const bodyG = ctx.createRadialGradient(cx-rad*0.35, cy-rad*0.35, rad*0.1, cx, cy, rad);
+  bodyG.addColorStop(0, '#f08c4a'); bodyG.addColorStop(0.55, '#9a3412'); bodyG.addColorStop(1, '#1e0b05');
+  ctx.fillStyle = bodyG; ctx.beginPath(); ctx.arc(cx, cy, rad, 0, Math.PI*2); ctx.fill();
+  for (const p of marsPts) {
+    const q = rot3D(p, marsState.rx, marsState.ry);
+    if (q[2] > -0.1) {
+      const a = Math.max(0.08, (q[2]+0.1)*0.65);
+      ctx.fillStyle = q[1] > 0.65 ? `rgba(226,232,240,${a*0.55})` : `rgba(251,146,60,${a*0.45})`;
+      ctx.fillRect(cx + q[0]*rad, cy - q[1]*rad, 2.2, 2.2);
+    }
+  }
+  const jez = rot3D([0.55, 0.32, 0.77], marsState.rx, marsState.ry);
+  if (jez[2] > 0) {
+    const jx = cx + jez[0]*rad, jy = cy - jez[1]*rad, pulse = 5 + Math.sin(t*0.005)*2.5;
+    ctx.strokeStyle = 'rgba(52,211,153,0.85)'; ctx.lineWidth = 1.6;
+    ctx.beginPath(); ctx.arc(jx, jy, pulse*2.1, 0, Math.PI*2); ctx.stroke();
+    ctx.fillStyle = '#34d399'; ctx.beginPath(); ctx.arc(jx, jy, 4.5, 0, Math.PI*2); ctx.fill();
+  }
+  ctx.strokeStyle = 'rgba(56,189,248,0.45)'; ctx.lineWidth = 1.4; ctx.beginPath();
+  for (let i = 0; i <= 72; i++) {
+    const ang = (i/72)*Math.PI*2;
+    const rp = rot3D([Math.cos(ang)*1.45, Math.sin(ang)*0.25, Math.sin(ang)*1.45], marsState.rx+0.35, marsState.ry*0.5);
+    const sx = cx + rp[0]*rad, sy = cy - rp[1]*rad;
+    if (i === 0) ctx.moveTo(sx, sy); else ctx.lineTo(sx, sy);
+  }
+  ctx.stroke();
+}
+
+/* ==================== 2. 3D EARTH FRACTURE MORPH ==================== */
+const earthState = { rx: 0.22, ry: 0.3, morph: 0.42, auto: false };
+const earthCanvas = document.getElementById('canvasEarth3D');
+const earthSlider = document.getElementById('earthMorphSlider');
+attachDragOrbit(earthCanvas, earthState);
+const plateSeeds = Array.from({ length: 12 }, (_, i) => {
+  const phi = Math.acos(1 - 2*(i+0.5)/12), theta = Math.PI*(1+Math.sqrt(5))*i;
+  const dir = [Math.sin(phi)*Math.cos(theta), Math.cos(phi), Math.sin(phi)*Math.sin(theta)];
+  const up = Math.abs(dir[1]) < 0.9 ? [0,1,0] : [1,0,0];
+  const tx = [dir[1]*up[2]-dir[2]*up[1], dir[2]*up[0]-dir[0]*up[2], dir[0]*up[1]-dir[1]*up[0]];
+  const tl = Math.hypot(...tx) || 1; tx[0]/=tl; tx[1]/=tl; tx[2]/=tl;
+  const ty = [dir[1]*tx[2]-dir[2]*tx[1], dir[2]*tx[0]-dir[0]*tx[2], dir[0]*tx[1]-dir[1]*tx[0]];
+  const corners = Array.from({ length: 6 }, (_, k) => {
+    const a = (k/6)*Math.PI*2 + (i%3)*0.2, r = 0.46 + ((i*7+k*3)%5)*0.03;
+    const v = [dir[0]+(tx[0]*Math.cos(a)+ty[0]*Math.sin(a))*r, dir[1]+(tx[1]*Math.cos(a)+ty[1]*Math.sin(a))*r, dir[2]+(tx[2]*Math.cos(a)+ty[2]*Math.sin(a))*r];
+    const L = Math.hypot(...v); return v.map(x => x/L);
+  });
+  return { dir, corners, speed: 0.7 + (i%4)*0.28, isLand: i%2===0 };
+});
+function updateEarthLabel(m) {
+  document.getElementById('earthMorphPct').textContent = `${Math.round(m*100)}%`;
+  document.getElementById('earthPhaseLabel').textContent = m < 0.15 ? 'INTACT BLUE MARBLE' : m < 0.5 ? 'TECTONIC FISSURES IGNITING' : m < 0.85 ? 'CRUST PLATES DRIFTING' : 'PLANETARY MANTLE RUPTURE';
+}
+earthSlider.addEventListener('input', () => { earthState.auto = false; earthState.morph = parseInt(earthSlider.value,10)/100; updateEarthLabel(earthState.morph); });
+function replayEarthMorph() { earthState.morph = 0; earthState.auto = true; earthSlider.value = 0; updateEarthLabel(0); }
+function drawEarth3D(t) {
+  if (current !== 2) return;
+  if (earthState.auto) {
+    earthState.morph = Math.min(1, earthState.morph + 0.008);
+    earthSlider.value = Math.round(earthState.morph*100);
+    updateEarthLabel(earthState.morph);
+    if (earthState.morph >= 1) earthState.auto = false;
+  }
+  const { w, h } = fitCanvas(earthCanvas); if (!w || !h) return;
+  const ctx = earthCanvas.getContext('2d'); ctx.clearRect(0, 0, w, h);
+  earthState.ry += 0.005;
+  const cx = w/2, cy = h/2, rad = Math.min(w, h)*0.27, m = earthState.morph;
+  const coreR = rad*(0.62 + m*0.14);
+  const corona = ctx.createRadialGradient(cx, cy, coreR*0.3, cx, cy, coreR*(1.35 + m*0.9));
+  corona.addColorStop(0, `rgba(255,237,160,${0.4+m*0.55})`); corona.addColorStop(0.45, `rgba(249,115,22,${0.25+m*0.55})`); corona.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = corona; ctx.beginPath(); ctx.arc(cx, cy, coreR*(1.35+m*0.9), 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = m > 0.12 ? '#fb923c' : '#1e3a8a'; ctx.beginPath(); ctx.arc(cx, cy, coreR, 0, Math.PI*2); ctx.fill();
+  if (m > 0.18) {
+    const ringR = rad*(0.9 + (m-0.18)*1.45);
+    ctx.strokeStyle = `rgba(251,146,60,${(1-m*0.65)*0.75})`; ctx.lineWidth = 2.4;
+    ctx.beginPath(); ctx.ellipse(cx, cy, ringR, ringR*0.34, -0.22, 0, Math.PI*2); ctx.stroke();
+  }
+  const platesProj = plateSeeds.map(pl => {
+    const drift = m*m*1.15*pl.speed;
+    const rc = rot3D([pl.dir[0]*(1+drift), pl.dir[1]*(1+drift), pl.dir[2]*(1+drift)], earthState.rx, earthState.ry);
+    const pts = pl.corners.map(c => rot3D([c[0]+pl.dir[0]*drift, c[1]+pl.dir[1]*drift, c[2]+pl.dir[2]*drift], earthState.rx, earthState.ry));
+    return { z: rc[2], pts, isLand: pl.isLand };
+  }).sort((a, b) => a.z - b.z);
+  for (const pl of platesProj) {
+    ctx.beginPath();
+    pl.pts.forEach((p, i) => { const sx = cx+p[0]*rad, sy = cy-p[1]*rad; if (i===0) ctx.moveTo(sx,sy); else ctx.lineTo(sx,sy); });
+    ctx.closePath();
+    const shade = Math.max(0.25, (pl.z+1)*0.5);
+    ctx.fillStyle = pl.isLand ? `rgba(${Math.round(28*shade)},${Math.round(125*shade)},${Math.round(92*shade)},0.94)` : `rgba(${Math.round(20*shade)},${Math.round(80*shade)},${Math.round(165*shade)},0.94)`;
+    ctx.fill();
+    ctx.strokeStyle = m > 0.08 ? `rgba(251,146,60,${Math.min(1,0.35+m)})` : 'rgba(56,189,248,0.3)';
+    ctx.lineWidth = 1.6; ctx.stroke();
+  }
+  if (m > 0.22) {
+    for (let i = 0; i < 18; i++) {
+      const ang = (i/18)*Math.PI*2 + t*0.0007*(i%2?1:-1), dist = rad*(0.95+m*0.85*(0.6+(i%4)*0.25));
+      const ep = rot3D([Math.cos(ang)*dist, Math.sin(i*1.7)*dist*0.45, Math.sin(ang)*dist], earthState.rx, earthState.ry);
+      ctx.fillStyle = i%3===0 ? '#fb923c' : '#94a3b8'; ctx.fillRect(cx+ep[0]-2.5, cy-ep[1]-2.5, 5, 5);
+    }
+  }
+}
+
+/* ==================== 3. LIVE DUST FIELD ==================== */
+const dustParticles = Array.from({ length: 80 }, () => ({ x: Math.random(), y: Math.random(), s: 0.4+Math.random()*1.4, l: 12+Math.random()*32 }));
+const dustCanvas = document.getElementById('canvasDustField');
+const stormSlider = document.getElementById('stormSlider');
+function updateStormSim() {
+  const pct = parseInt(stormSlider.value, 10), d = pct/100;
+  const eff = 1.0 - (1.0-0.45)*d, pwr = 3.0*2*eff, therm = 1.0+0.5*d;
+  document.getElementById('stormLabel').textContent = `STORM: ${pct}%`;
+  document.getElementById('solarEffVal').textContent = `${Math.round(eff*100)}%`;
+  document.getElementById('powerGenVal').textContent = `+${pwr.toFixed(2)}/s`;
+  document.getElementById('thermalLoadVal').textContent = `${therm.toFixed(2)}×`;
+  document.getElementById('dustBadgeHud').textContent = pct < 25 ? 'CLEAR JEZERO SKY' : pct < 70 ? 'MODERATE SQUALL' : 'PEAK DUST STORM';
+  const cx = 44 + d*(396-44), cy = 16 + d*(72-16);
+  document.getElementById('stormCursor').setAttribute('x1', cx); document.getElementById('stormCursor').setAttribute('x2', cx);
+  document.getElementById('stormDotSolar').setAttribute('cx', cx); document.getElementById('stormDotSolar').setAttribute('cy', cy);
+}
+stormSlider.addEventListener('input', updateStormSim); updateStormSim();
+function drawDustField() {
+  if (current !== 3) return;
+  const { w, h } = fitCanvas(dustCanvas); if (!w || !h) return;
+  const ctx = dustCanvas.getContext('2d'), d = parseInt(stormSlider.value, 10)/100;
+  const g = ctx.createLinearGradient(0, 0, 0, h);
+  g.addColorStop(0, `rgb(${Math.round(45+d*95)},${Math.round(28+d*42)},${Math.round(22+d*18)})`);
+  g.addColorStop(0.65, `rgb(${Math.round(135+d*55)},${Math.round(78+d*28)},${Math.round(44+d*12)})`);
+  g.addColorStop(1, '#2d160b');
+  ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+  ctx.fillStyle = '#3b1d10'; ctx.beginPath();
+  ctx.moveTo(0,h*0.66); ctx.lineTo(w*0.2,h*0.56); ctx.lineTo(w*0.42,h*0.64); ctx.lineTo(w*0.72,h*0.53); ctx.lineTo(w,h*0.63); ctx.lineTo(w,h); ctx.lineTo(0,h); ctx.closePath(); ctx.fill();
+  const speed = 0.003 + d*0.018; ctx.lineWidth = 1.6;
+  for (const p of dustParticles) {
+    p.x = (p.x + speed*p.s) % 1;
+    ctx.strokeStyle = `rgba(253,186,116,${0.12+d*0.45})`;
+    ctx.beginPath(); ctx.moveTo(p.x*w, p.y*h); ctx.lineTo(p.x*w + p.l*(0.5+d*1.4), p.y*h+2); ctx.stroke();
+  }
+}
+
+/* ==================== 4. 3D CRISPR DNA HELIX ==================== */
+const dnaState = { rx: 0.15, ry: 0 };
+const dnaCanvas = document.getElementById('canvasDNA3D');
+attachDragOrbit(dnaCanvas, dnaState);
+const geneButtons = Array.from(document.querySelectorAll('[data-gene]'));
+let activeGenes = ['CRY', 'PER'];
+function updateGeneSim() {
+  activeGenes = geneButtons.filter(b => b.classList.contains('active')).map(b => b.dataset.gene);
+  document.getElementById('geneComboOut').textContent = activeGenes.length ? `GENE:${activeGenes.join('+')}` : 'GENE:WT';
+  document.getElementById('dnaHudTag').textContent = activeGenes.length ? `${activeGenes.join('+')} SPLICED` : 'WILD-TYPE';
+  const growTotal = (30 + 45) / (activeGenes.includes('PER') ? 1.5 : 1.0);
+  const waterRate = 0.10 * (activeGenes.includes('XER') ? 0.55 : 1.0);
+  const o2Bonus = activeGenes.includes('PHO') ? '+0.35/s' : '+0';
+  document.getElementById('geneGrowTime').textContent = `${growTotal.toFixed(1)} s`;
+  document.getElementById('geneWaterUse').textContent = `${waterRate.toFixed(2)} L/s | ${o2Bonus}`;
+}
+geneButtons.forEach(b => b.addEventListener('click', () => { b.classList.toggle('active'); updateGeneSim(); }));
+updateGeneSim();
+function drawDNA3D(t) {
+  if (current !== 4) return;
+  const { w, h } = fitCanvas(dnaCanvas); if (!w || !h) return;
+  const ctx = dnaCanvas.getContext('2d'); ctx.clearRect(0, 0, w, h);
+  dnaState.ry += 0.022;
+  const cx = w/2, cy = h/2, scale = Math.min(w, h)*0.34, rungs = 16;
+  const traitColors = { CRY: '#38bdf8', PER: '#34d399', XER: '#f59e0b', PHO: '#a855f7' };
+  const cols = activeGenes.length ? activeGenes.map(g => traitColors[g]) : ['#64748b'];
+  const items = [];
+  for (let i = 0; i < rungs; i++) {
+    const y = ((i/(rungs-1)) - 0.5)*2.1, a = i*0.45 + dnaState.ry;
+    const r = 0.58 + (activeGenes.includes('PER') ? Math.sin(t*0.004 + i)*0.04 : 0);
+    const p1 = rot3D([Math.cos(a)*r, y, Math.sin(a)*r], dnaState.rx, 0);
+    const p2 = rot3D([-Math.cos(a)*r, y, -Math.sin(a)*r], dnaState.rx, 0);
+    items.push({ z: (p1[2]+p2[2])*0.5, p1, p2, col: cols[i%cols.length] });
+  }
+  items.sort((a, b) => a.z - b.z);
+  for (const it of items) {
+    const x1 = cx+it.p1[0]*scale, y1 = cy+it.p1[1]*scale, x2 = cx+it.p2[0]*scale, y2 = cy+it.p2[1]*scale;
+    ctx.strokeStyle = it.col; ctx.globalAlpha = 0.55 + (it.z+0.6)*0.35; ctx.lineWidth = 2.4;
+    ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); ctx.globalAlpha = 1;
+    ctx.fillStyle = '#34d399'; ctx.beginPath(); ctx.arc(x1, y1, 4.5, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#38bdf8'; ctx.beginPath(); ctx.arc(x2, y2, 4.5, 0, Math.PI*2); ctx.fill();
+  }
+}
+
+/* ==================== 5. 3D OUTPOST DIORAMA ==================== */
+const outpostState = { rx: 0.52, ry: 0.45 };
+const outpostCanvas = document.getElementById('canvasOutpost3D');
+attachDragOrbit(outpostCanvas, outpostState);
+function setOutpostMode(mode) {
+  document.getElementById('outpostView3D').classList.toggle('active', mode==='3d');
+  document.getElementById('outpostView2D').classList.toggle('active', mode==='2d');
+  document.getElementById('btnMode3D').classList.toggle('active', mode==='3d');
+  document.getElementById('btnMode2D').classList.toggle('active', mode==='2d');
+}
+function drawOutpost3D() {
+  if (current !== 5 || !document.getElementById('outpostView3D').classList.contains('active')) return;
+  const { w, h } = fitCanvas(outpostCanvas); if (!w || !h) return;
+  const ctx = outpostCanvas.getContext('2d'); ctx.clearRect(0, 0, w, h);
+  outpostState.ry += 0.0025;
+  const cx = w/2, cy = h*0.55, sc = Math.min(w, h)*0.27;
+  ctx.strokeStyle = 'rgba(224,122,56,0.42)'; ctx.lineWidth = 3; ctx.beginPath();
+  for (let i = 0; i <= 24; i++) {
+    const a = (i/24)*Math.PI*2, cliff = 1.35 + ((i*3)%4)*0.06;
+    const p = rot3D([Math.cos(a)*cliff, 0, Math.sin(a)*cliff], outpostState.rx, outpostState.ry);
+    const sx = cx + p[0]*sc, sy = cy - p[1]*sc;
+    if (i===0) ctx.moveTo(sx,sy); else ctx.lineTo(sx,sy);
+  }
+  ctx.stroke();
+  const items = [
+    { x:0, z:0, sx:0.45, sz:0.22, col:'#10b981', lbl:'HUB + BIO-LAB' },
+    { x:-0.78, z:-0.38, sx:0.36, sz:0.2, col:'#f59e0b', lbl:'DROPSHIP (-1850,-900)' },
+    { x:0, z:-0.92, sx:0.26, sz:0.32, col:'#38bdf8', lbl:'CRYO-ICE RIG' },
+    { x:0.85, z:0.18, sx:0.24, sz:0.28, col:'#a855f7', lbl:'COMMS ARRAY' },
+    { x:-0.72, z:0.62, sx:0.32, sz:0.14, col:'#34d399', lbl:'NW SOLAR SUB' }
+  ].map(it => ({ ...it, depth: rot3D([it.x,0,it.z], outpostState.rx, outpostState.ry)[2] })).sort((a,b) => a.depth - b.depth);
+  for (const it of items) {
+    const c = rot3D([it.x, 0, it.z], outpostState.rx, outpostState.ry);
+    const px = cx + c[0]*sc, py = cy - c[1]*sc, bw = it.sx*sc, bh = it.sz*sc;
+    ctx.fillStyle = it.col; ctx.strokeStyle = 'rgba(255,255,255,0.45)'; ctx.lineWidth = 1.2;
+    ctx.fillRect(px-bw/2, py-bh, bw, bh); ctx.strokeRect(px-bw/2, py-bh, bw, bh);
+    ctx.fillStyle = '#e6f0f8'; ctx.font = 'bold 10px monospace'; ctx.textAlign = 'center';
+    ctx.fillText(it.lbl, px, py - bh - 5);
+  }
+}
+const compounds = {
+  dropship: { tag:'WEST COMPOUND // LANDING SITE', coords:'(-1850, -900, 60)', name:'Enterable DropShip Compound',
+    desc:'900×600×450 cm spacecraft with heatshield hull, +X ground-level boarding ramp, walkable cockpit/cargo interior, consoles & DropLocker.',
+    specs:[['Walkability','Full interior NavMesh + ramp'],['Interactive Device','[E] LOCKER:KIT+LOG'],['Prologue Sync','DropShip-tagged descent']] },
+  hub: { tag:'PRESSURIZED CORE // HAB & LAB', coords:'(-500 .. +500, 0, 60)', name:'Habitat, Airlock & CRISPR Bio-Lab',
+    desc:'1013 mbar / 1.0G sanctuary housing Power Unit, O₂ Scrubber, WaterPurifier, GeneLab (560,430,60), Sabatier (560,-430,60), Transmitter & Plant Plots.',
+    specs:[['Pressure / Gravity','1013 mbar / 1.0G'],['Bio Stations','GeneLab + Sabatier Reactor'],['Water Loop','60% sealed transpiration recycle']] },
+  icerig: { tag:'SOUTH COMPOUND // EXTRACTION', coords:'(0, -2100, 60)', name:'South Cryo-Ice Rig & Sabatier Pipeline',
+    desc:'Automated drill derrick, H₂O storage spheres, insulated pipeline trestles leading north toward Base, plus interactive CryoRig ([E] CRYO:+1 ICE +4L).',
+    specs:[['Mission Role','IceRun phase (4 ice needed)'],['Interactive Device','[E] CRYO:+1 ICE +4L'],['Hazard Zone','Exposed 0.38G / -63°C EVA']] },
+  comms: { tag:'EAST COMPOUND // DEEP-SPACE LINK', coords:'(2000, 400, 60)', name:'East Deep-Space Comms Array & Radar',
+    desc:'Parabolic high-gain dish tower, comms shelter, backup seed cache (+3 seeds), basalt ridge cover for Gunner fights, and Turret Overclock terminal.',
+    specs:[['Mission Role','CommsRun + Turret Overclock'],['Interactive Device','[E] COMMS:TURRET OC (0.6×CD)'],['Combat Cover','Basalt ridge LOS-break rocks']] },
+  solar: { tag:'NORTH-WEST COMPOUND // ENERGY', coords:'(-1700, 1400, 60)', name:'NW Solar Substation & Rover Pad',
+    desc:'Tilted solar wing racks, battery transformer banks, armored blast barriers, and grid boost console to survive peak 45% dust-storm solar drops.',
+    specs:[['Interactive Device','[E] SOLAR:+35% GRID'],['Dust Physics','100% clear → 45% peak storm'],['Nearby Defense','NW Flank Sentry Turret Pad']] }
+};
+function selectCompound(key) {
+  const c = compounds[key]; if (!c) return;
+  document.getElementById('compTag').textContent = c.tag;
+  document.getElementById('compCoords').textContent = c.coords;
+  document.getElementById('compName').textContent = c.name;
+  document.getElementById('compDesc').textContent = c.desc;
+  document.getElementById('compSpecs').innerHTML = c.specs.map(([k,v]) => `<div class="kv-row"><span class="kv-k">${k}</span><span class="kv-v">${v}</span></div>`).join('');
+  document.querySelectorAll('[data-comp]').forEach(b => b.classList.toggle('active', b.dataset.comp === key));
+}
+
+/* ==================== 6. 3D THREAT HOLOGRAM MORPH ==================== */
+const enemyState = { rx: 0.25, ry: 0.6, kind: 'raider' };
+const enemyCanvas = document.getElementById('canvasEnemy3D');
+attachDragOrbit(enemyCanvas, enemyState);
+let currentEnemySheet = '../Assets/Creatures/Production/Previews/Raider_contact_sheet.png';
+const enemies = {
+  raider: { title:'TIER 1 // RAIDER HOLOGRAM', crit:'1.75× HEAD CRIT', knock:'KNOCKBACK: 320 cm/s', role:'AGILE WATER-LINE FLANKER', badge:'50 HP | 520 cm/s', dp:'10 HP', ds:'14 HP', tel:'0.7 s',
+    desc:'Targets Water Tank/Pipe (4.0) & lunges within 9 m. Any hit during telegraph staggers & cancels lunge. Lethal alien hits trigger a 1.55s visor-breach maul sequence (StartDyingSequence).',
+    sheet:'../Assets/Creatures/Production/Previews/Raider_contact_sheet.png', scap:'Raider Rig & Anims', sfile:'Raider_contact_sheet.png', col:'#ef4444', scale:[0.95,0.55,1.35] },
+  gunner: { title:'TIER 2 // GUNNER HOLOGRAM', crit:'1.75× HEAD CRIT', knock:'KNOCKBACK: 180 cm/s', role:'RANGED COVER SNIPER', badge:'70 HP | 380 cm/s', dp:'12 HP', ds:'10 HP', tel:'0.9 s',
+    desc:'Flanks from NW bearing with vivid AimBeam warning ("TARGETED - BREAK LOS!"). Shot re-checks LOS at fire time—ducking behind basalt cover makes it miss before retreating for 2s.',
+    sheet:'../Assets/Creatures/Production/Previews/Gunner_contact_sheet.png', scap:'Gunner Rig & Cover', sfile:'Gunner_contact_sheet.png', col:'#3b82f6', scale:[0.65,1.15,0.75] },
+  breaker: { title:'TIER 3 // BREAKER HOLOGRAM', crit:'0.5× ARMOR / 1.5× WINDUP', knock:'FLING: 1450+520Z (0.38G)', role:'COLOSSAL SIEGE JUGGERNAUT', badge:'220 HP | 150 cm/s', dp:'42 HP', ds:'45 HP', tel:'1.8 s',
+    desc:'Armored outside windup (0.5× dmg). Expanding 3.5 m ShockwaveRing flings grounded players skyward in 0.38G Mars gravity—counterable by jumping over the shockwave (DeltaZ ≥ 110 cm)!',
+    sheet:'../Assets/Creatures/Production/Previews/Breaker_contact_sheet.png', scap:'Breaker Siege Anims', sfile:'Breaker_contact_sheet.png', col:'#a855f7', scale:[1.35,0.9,1.45] }
+};
+function selectEnemy(kind) {
+  const e = enemies[kind]; if (!e) return;
+  enemyState.kind = kind; currentEnemySheet = e.sheet;
+  document.getElementById('enemyHoloTitle').textContent = e.title;
+  document.getElementById('enemyCritTag').textContent = e.crit;
+  document.getElementById('enemyKnockTag').textContent = e.knock;
+  document.getElementById('enemyRoleTitle').textContent = e.role;
+  document.getElementById('enemyStatBadge').textContent = e.badge;
+  document.getElementById('enDmgPlayer').textContent = e.dp;
+  document.getElementById('enDmgStruct').textContent = e.ds;
+  document.getElementById('enTelegraph').textContent = e.tel;
+  document.getElementById('enemyDescText').textContent = e.desc;
+  document.getElementById('enemySheetImg').src = e.sheet;
+  document.getElementById('enemySheetCap').textContent = e.scap;
+  document.getElementById('enemySheetFile').textContent = e.sfile;
+  document.getElementById('btnEnemyRaider').className = 'btn-chip' + (kind==='raider'?' active-crimson':'');
+  document.getElementById('btnEnemyGunner').className = 'btn-chip' + (kind==='gunner'?' active-blue':'');
+  document.getElementById('btnEnemyBreaker').className = 'btn-chip' + (kind==='breaker'?' active-violet':'');
+}
+let morphScale = [0.95, 0.55, 1.35];
+function drawEnemy3D(t) {
+  if (current !== 6) return;
+  const { w, h } = fitCanvas(enemyCanvas); if (!w || !h) return;
+  const ctx = enemyCanvas.getContext('2d'); ctx.clearRect(0, 0, w, h);
+  enemyState.ry += 0.014;
+  const e = enemies[enemyState.kind];
+  for (let i = 0; i < 3; i++) morphScale[i] += (e.scale[i] - morphScale[i]) * 0.12;
+  const cx = w/2, cy = h/2, sc = Math.min(w, h)*0.24;
+  ctx.strokeStyle = e.col; ctx.globalAlpha = 0.45; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.ellipse(cx, cy+sc*0.95, sc*1.1, sc*0.28, 0, 0, Math.PI*2); ctx.stroke();
+  ctx.globalAlpha = 0.9; ctx.strokeStyle = e.col; ctx.lineWidth = 1.8;
+  const rings = 7, segs = 10, grid = [];
+  for (let r = 0; r < rings; r++) {
+    const v = (r/(rings-1))*Math.PI, row = [];
+    for (let s = 0; s < segs; s++) {
+      const u = (s/segs)*Math.PI*2, pulse = 1 + Math.sin(t*0.005 + r*0.8)*0.05;
+      const pt = rot3D([Math.sin(v)*Math.cos(u)*morphScale[0]*pulse, Math.cos(v)*morphScale[1]*pulse, Math.sin(v)*Math.sin(u)*morphScale[2]*pulse], enemyState.rx, enemyState.ry);
+      row.push([cx + pt[0]*sc, cy - pt[1]*sc]);
+    }
+    grid.push(row);
+  }
+  for (let r = 0; r < rings; r++) { ctx.beginPath(); for (let s = 0; s <= segs; s++) { const p = grid[r][s%segs]; if (s===0) ctx.moveTo(p[0],p[1]); else ctx.lineTo(p[0],p[1]); } ctx.stroke(); }
+  for (let s = 0; s < segs; s++) { ctx.beginPath(); for (let r = 0; r < rings; r++) { const p = grid[r][s]; if (r===0) ctx.moveTo(p[0],p[1]); else ctx.lineTo(p[0],p[1]); } ctx.stroke(); }
+  ctx.globalAlpha = 1;
+}
+
+function animate(t) {
+  drawMars3D(t); drawEarth3D(t); drawDustField(); drawDNA3D(t); drawOutpost3D(); drawEnemy3D(t);
+  requestAnimationFrame(animate);
+}
+requestAnimationFrame(animate);
+goSlide(1);
+</script>
+</body>
+</html>

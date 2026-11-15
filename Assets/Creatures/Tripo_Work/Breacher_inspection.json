@@ -1,0 +1,17 @@
+{
+  "source": "tripo_convert_a248d4ea-eedf-4384-96af-d67d7f427fc5.fbx",
+  "name": "Breacher",
+  "blend": "Breacher_walk.blend",
+  "action": "Armature|preset:quadruped:walk",
+  "frames": [
+    1,
+    62
+  ],
+  "fps": 30,
+  "bones": 23,
+  "vertices": 4840,
+  "polygons": 9676,
+  "seam_bone_translation_max": 0.013883970647064347,
+  "quarter_frame_bone_motion_max": 0.10566381290938678,
+  "note": "Imported Tripo walk, visual and Unreal validation required; motion metrics are in armature local units."
+}
