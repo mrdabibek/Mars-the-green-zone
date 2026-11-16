@@ -1,317 +1,209 @@
 #!/usr/bin/env python3
-"""
-Build the promotional trailer video Docs/Mars_Last_Green_Trailer.mp4
-and archive final Vulkan SM5 screenshots to Docs/Final_Screenshots/.
+"""Edit the trailer from the 30 fps Unreal movie frames and the Musopen Grieg recording.
+
+Supply the frame folder from the trailer capture and the full 154-second FLAC:
+  python Tools/build_trailer.py --frames /path/to/LinuxEditor --music /path/to/musopen.flac
 """
 
-import glob
-import os
+import argparse
+from dataclasses import dataclass
+from pathlib import Path
 import shutil
 import subprocess
-from pathlib import Path
-from PIL import Image, ImageDraw, ImageFilter, ImageFont
+from tempfile import TemporaryDirectory
 
-ROOT = Path("/home/dabi/Documents/Mars Last Green")
-SHOTS_SRC = ROOT / "Saved" / "Screenshots" / "LinuxEditor"
-SHOTS_DST = ROOT / "Docs" / "Final_Screenshots"
-PREVIEWS = ROOT / "Assets" / "Tripo" / "Previews"
-AUDIO = ROOT / "Assets" / "Audio"
-INTRO_AUDIO = ROOT / "Assets" / "Intro"
-OUT_VIDEO = ROOT / "Docs" / "Mars_Last_Green_Trailer.mp4"
-TMP = Path("/tmp/mlg_trailer_work")
-FFMPEG = str(Path.home() / ".local" / "bin" / "ffmpeg")
-FFPROBE = str(Path.home() / ".local" / "bin" / "ffprobe")
+from PIL import Image, ImageDraw, ImageFont
 
-W, H = 1280, 720
+ROOT = Path(__file__).resolve().parents[1]
+DEFAULT_OUTPUT = ROOT / "Docs" / "Mars_Last_Green_Trailer.mp4"
 FPS = 30
-XFADE = 0.50
-
-FONT_BOLD = "/usr/share/fonts/opentype/urw-base35/URWGothic-Demi.otf"
-FONT_SANS = "/usr/share/fonts/opentype/urw-base35/NimbusSans-Bold.otf"
-FONT_REG = "/usr/share/fonts/opentype/urw-base35/NimbusSans-Regular.otf"
-FONT_MONO = "/usr/share/fonts/opentype/urw-base35/NimbusMonoPS-Bold.otf"
-
-
-def run(cmd):
-    print("+", " ".join(str(c) for c in cmd), flush=True)
-    subprocess.run(cmd, check=True)
+WIDTH, HEIGHT = 1600, 900
+BOLD = "/usr/share/fonts/truetype/noto/NotoSans-Bold.ttf"
+REGULAR = "/usr/share/fonts/truetype/noto/NotoSans-Regular.ttf"
+MONO = "/usr/share/fonts/truetype/dejavu/DejaVuSansMono-Bold.ttf"
+MUSIC_SOURCE = (
+    "https://commons.wikimedia.org/wiki/File:Grieg_-_Peer_Gynt_Suite_No._1,_Op._46_"
+    "-_IV._In_the_Hall_of_the_Mountain_King_(Musopen_Symphony).flac"
+)
 
 
-def sync_final_screenshots():
-    SHOTS_DST.mkdir(parents=True, exist_ok=True)
-    for old in SHOTS_DST.glob("*.png"):
-        old.unlink()
-    copied = 0
-    for src in sorted(SHOTS_SRC.glob("HighresScreenshot*.png")):
-        shutil.copy2(src, SHOTS_DST / src.name)
-        copied += 1
-    print(f"Synced {copied} screenshots to {SHOTS_DST}")
-    return copied
+@dataclass(frozen=True)
+class Clip:
+    name: str
+    start: int
+    stop: int
+    caption: str = ""
+    intro: bool = False
 
 
-def draw_overlay_png(out_path: Path, tag: str = "", title: str = "", subtitle: str = "", mode: str = "card"):
-    """Create a sleek 1280x720 RGBA overlay PNG (no clutter on pre-captioned prologue frames)."""
-    img = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-    draw = ImageDraw.Draw(img)
-
-    f_tag = ImageFont.truetype(FONT_MONO, 18)
-    f_title = ImageFont.truetype(FONT_BOLD, 34)
-    f_sub = ImageFont.truetype(FONT_REG, 22)
-
-    if mode == "badge_top":
-        if tag:
-            tw = draw.textbbox((0, 0), tag, font=f_tag)[2]
-            pad_x, pad_y = 18, 10
-            bx0, by0 = 36, 76
-            bx1, by1 = bx0 + tw + pad_x * 2, by0 + 22 + pad_y * 2
-            draw.rounded_rectangle([bx0, by0, bx1, by1], radius=6, fill=(8, 14, 24, 180), outline=(88, 196, 255, 210), width=2)
-            draw.rectangle([bx0, by0, bx0 + 5, by1], fill=(235, 95, 52, 240))
-            draw.text((bx0 + pad_x, by0 + pad_y - 1), tag, font=f_tag, fill=(210, 242, 255, 255))
-
-    elif mode == "lower_third":
-        # Subtle bottom gradient bar (avoid HUD edges, centered crisp feature callout bar)
-        grad = Image.new("RGBA", (W, 130), (0, 0, 0, 0))
-        gdraw = ImageDraw.Draw(grad)
-        for y in range(130):
-            alpha = int(175 * (y / 130.0) ** 1.3)
-            gdraw.line([(0, y), (W, y)], fill=(6, 10, 18, alpha))
-        img.alpha_composite(grad, (0, H - 130))
-
-        # Centered pill panel cleanly between bottom-left (x<355) and bottom-right (x>985) HUD cards
-        pill_w = 600
-        pill_h = 82
-        px0 = (W - pill_w) // 2 + 18
-        py0 = H - 108
-        draw.rounded_rectangle([px0, py0, px0 + pill_w, py0 + pill_h], radius=10, fill=(10, 16, 28, 205), outline=(74, 178, 232, 210), width=2)
-        draw.rectangle([px0, py0 + 8, px0 + 6, py0 + pill_h - 8], fill=(242, 108, 62, 255))
-
-        if tag:
-            draw.text((px0 + 24, py0 + 10), tag, font=f_tag, fill=(116, 214, 255, 255))
-        if title:
-            lt_font = ImageFont.truetype(FONT_SANS, 22)
-            for sz in (22, 20, 18, 16):
-                cand = ImageFont.truetype(FONT_SANS, sz)
-                if draw.textbbox((0, 0), title, font=cand)[2] <= pill_w - 40:
-                    lt_font = cand
-                    break
-            draw.text((px0 + 24, py0 + 38), title, font=lt_font, fill=(248, 251, 255, 255))
-
-    elif mode == "hero_plate":
-        # Clean semi-transparent dark band at top for 3D Tripo asset sheets
-        draw.rectangle([0, 0, W, 86], fill=(8, 12, 20, 220))
-        draw.line([(0, 86), (W, 86)], fill=(86, 198, 255, 220), width=2)
-        if tag:
-            draw.text((40, 16), tag, font=f_tag, fill=(244, 124, 72, 255))
-        if title:
-            draw.text((40, 42), title, font=ImageFont.truetype(FONT_SANS, 28), fill=(244, 249, 255, 255))
-
-    elif mode == "endcard":
-        # Full dark cosmic backdrop overlay over dimmed frame
-        draw.rectangle([0, 0, W, H], fill=(7, 10, 18, 195))
-        # Subtle accent glow lines
-        draw.line([(160, 205), (W - 160, 205)], fill=(238, 98, 56, 200), width=2)
-        draw.line([(240, 505), (W - 240, 505)], fill=(86, 194, 255, 180), width=2)
-
-        f_mega = ImageFont.truetype(FONT_BOLD, 74)
-        f_sub_lg = ImageFont.truetype(FONT_SANS, 28)
-        f_meta = ImageFont.truetype(FONT_MONO, 20)
-
-        t0 = "NASA SPACE APPS HACKATHON // UE 5.2 C++"
-        b0 = draw.textbbox((0, 0), t0, font=f_meta)
-        draw.text(((W - (b0[2] - b0[0])) // 2, 168), t0, font=f_meta, fill=(116, 214, 255, 255))
-
-        t1 = "MARS: LAST GREEN"
-        b1 = draw.textbbox((0, 0), t1, font=f_mega)
-        draw.text(((W - (b1[2] - b1[0])) // 2, 250), t1, font=f_mega, fill=(255, 255, 255, 255))
-
-        t2 = "Earth Shattered. Seed the Red Planet. Hold the Colony."
-        b2 = draw.textbbox((0, 0), t2, font=f_sub_lg)
-        draw.text(((W - (b2[2] - b2[0])) // 2, 355), t2, font=f_sub_lg, fill=(245, 152, 102, 255))
-
-        t3 = "Real Martian Physics (6.1 mb | -55C | 0.38G) · Sabatier H2O · Tripo 3D · 13/13 Tests Pass"
-        b3 = draw.textbbox((0, 0), t3, font=f_sub)
-        draw.text(((W - (b3[2] - b3[0])) // 2, 422), t3, font=f_sub, fill=(214, 228, 242, 255))
-
-        t4 = "github.com/mrdabibek/Mars-the-green-zone"
-        b4 = draw.textbbox((0, 0), t4, font=f_meta)
-        draw.text(((W - (b4[2] - b4[0])) // 2, 535), t4, font=f_meta, fill=(138, 240, 190, 255))
-
-    img.save(out_path)
+CLIPS = (
+    Clip("descent", 25, 123, "Aster One descends to Mars", True),
+    Clip("relay", 149, 216, "The last signal from Earth", True),
+    Clip("fissure", 221, 253, "Make something grow.", True),
+    Clip("rupture", 253, 343, "Earth goes silent", True),
+    Clip("loadout", 351, 409, "Choose what to carry"),
+    Clip("repair", 416, 499, "Restore life support"),
+    Clip("greenhouse", 506, 593, "Keep the seed vault alive"),
+    Clip("waterline", 601, 679, ""),
+    Clip("defense", 684, 854, "Defend the outpost"),
+)
+END_FRAMES = 120
+DURATION = (sum(c.stop - c.start for c in CLIPS) + END_FRAMES) / FPS
 
 
-def make_ken_burns_clip(src_img: Path, overlay_png: Path, out_mp4: Path, dur: float, z0: float, z1: float, pan_x0: float, pan_x1: float, pan_y0: float, pan_y1: float):
-    """Render a jitter-free 30fps Ken-Burns clip using 3x supersampling."""
-    frames = max(int(round(dur * FPS)), 1)
-    # Supersampled 3x dimensions for subpixel smooth zoompan
-    up_w, up_h = W * 3, H * 3
-    denom = max(frames - 1, 1)
-    z_expr = f"{z0:.4f}+({z1:.4f}-({z0:.4f}))*on/{denom}"
-    x_expr = f"(iw-iw/zoom)*({pan_x0:.4f}+({pan_x1:.4f}-({pan_x0:.4f}))*on/{denom})"
-    y_expr = f"(ih-ih/zoom)*({pan_y0:.4f}+({pan_y1:.4f}-({pan_y0:.4f}))*on/{denom})"
-
-    vf = (
-        f"[0:v]scale={up_w}:{up_h}:force_original_aspect_ratio=increase,"
-        f"crop={up_w}:{up_h},"
-        f"zoompan=z='{z_expr}':x='{x_expr}':y='{y_expr}':d={frames}:s={W}x{H}:fps={FPS},"
-        f"eq=contrast=1.04:saturation=1.08,"
-        f"format=rgba[bg];"
-        f"[bg][1:v]overlay=0:0:format=auto,format=yuv420p[v]"
+def ffmpeg(*args):
+    subprocess.run(
+        ["ffmpeg", "-hide_banner", "-loglevel", "error", "-y",
+         "-filter_threads", "2", "-filter_complex_threads", "2", *map(str, args)],
+        check=True,
     )
-    run([
-        FFMPEG, "-y", "-hide_banner", "-loglevel", "error",
-        "-loop", "1", "-i", str(src_img),
-        "-loop", "1", "-t", f"{dur:.3f}", "-i", str(overlay_png),
-        "-filter_complex", vf,
-        "-map", "[v]", "-t", f"{dur:.3f}",
-        "-c:v", "libx264", "-preset", "medium", "-crf", "17", "-pix_fmt", "yuv420p",
-        str(out_mp4),
-    ])
+
+
+def font(path, size):
+    return ImageFont.truetype(path, size)
+
+
+def overlay(clip, path):
+    image = Image.new("RGBA", (WIDTH, HEIGHT))
+    draw = ImageDraw.Draw(image)
+    dark = (9, 13, 20, 255)
+    paper = (248, 245, 237, 255)
+    copper = (242, 165, 107, 255)
+    if clip.intro:
+        # The game supplies its own letterbox and subtitles. Remask just those bands.
+        draw.rectangle((0, 0, WIDTH, 81), fill=dark)
+        draw.rectangle((0, 781, WIDTH, HEIGHT), fill=dark)
+        if clip.caption:
+            draw.rectangle((56, 823, 80, 827), fill=copper)
+            draw.text((99, 808), clip.caption, font=font(BOLD, 38), fill=paper)
+    elif clip.caption:
+        # Reserve a safe lower strip so the game's vital signs and ammo stay visible.
+        draw.rectangle((0, 819, WIDTH, HEIGHT), fill=dark)
+        draw.rectangle((56, 855, 80, 859), fill=copper)
+        draw.text((98, 838), clip.caption, font=font(BOLD, 35), fill=paper)
+    image.save(path)
+
+
+def end_card(path):
+    image = Image.new("RGB", (WIDTH, HEIGHT), "#0a1119")
+    draw = ImageDraw.Draw(image)
+    draw.rectangle((108, 277, 179, 282), fill="#e9a376")
+    draw.text((105, 313), "MARS", font=font(BOLD, 72), fill="#e9a376")
+    draw.text((101, 393), "LAST GREEN", font=font(BOLD, 113), fill="#f7f3e9")
+    draw.text((110, 585), "A first-person survival game on Mars", font=font(REGULAR, 38), fill="#c1ceda")
+    draw.text((110, 682), "NASA SPACE APPS CHALLENGE 2026  /  GAME PROTOTYPE",
+              font=font(MONO, 18), fill="#99afbf")
+    draw.text((110, 790), "Music: Edvard Grieg · In the Hall of the Mountain King · Musopen Symphony Orchestra",
+              font=font(REGULAR, 19), fill="#b6c5cf")
+    draw.text((110, 827), "In-engine footage · AI-assisted game assets and radio dialogue",
+              font=font(REGULAR, 18), fill="#99afbf")
+    image.save(path)
+
+
+def encode_clip(frames, clip, target, work):
+    graphic = work / f"{clip.name}.png"
+    overlay(clip, graphic)
+    if clip.intro:
+        grade = "eq=contrast=1.045:brightness=-0.022:saturation=0.97"
+        crop = "scale=1600:900"
+    elif clip.caption:
+        # Keep the complete game viewport and allocate space below it for the caption.
+        grade = "eq=contrast=1.025:brightness=-0.008:saturation=0.96"
+        crop = "scale=1456:818,pad=1600:900:72:0:0x090d14"
+    else:
+        grade = "eq=contrast=1.025:brightness=-0.008:saturation=0.96"
+        crop = "scale=1600:900"
+    vf = f"[0:v]{crop},{grade},setsar=1[shot];[shot][1:v]overlay,format=yuv420p[v]"
+    ffmpeg("-framerate", FPS, "-start_number", clip.start, "-i", frames / "MovieFrame%05d.png",
+           "-i", graphic, "-filter_complex", vf, "-map", "[v]", "-frames:v", clip.stop - clip.start,
+           "-an", "-c:v", "libx264", "-threads", 3, "-preset", "fast", "-crf", 17, target)
+
+
+def soundtrack(music, dest):
+    audio = ROOT / "Assets" / "Audio"
+    radio = ROOT / "Assets" / "Intro" / "Prologue_Radio.wav"
+    sources = [
+        music, audio / "SFX_Intro_LanderBurn.wav", audio / "SFX_Intro_EarthShatter.wav",
+        radio, audio / "SFX_Mars_Wind_Loop.wav", audio / "SFX_Rifle_Fire.wav",
+        audio / "SFX_Transmit.wav",
+    ]
+    inputs = [part for source in sources for part in ("-i", source)]
+    graph = (
+        "[0:a]asplit=2[build][final];"
+        "[build]atrim=start=86.25:duration=26.63,asetpts=PTS-STARTPTS,volume='1.55-0.77*clip((t-10)/5,0,1)':eval=frame,"
+        "afade=t=in:d=0.4[buildcut];"
+        "[final]atrim=start=148.62:duration=3.48,asetpts=PTS-STARTPTS,volume=0.72[finalcut];"
+        "[buildcut][finalcut]acrossfade=d=0.35:c1=tri:c2=tri[score];"
+        "[1:a]aformat=sample_rates=48000:channel_layouts=stereo,atrim=start=0.55:duration=3.05,asetpts=PTS-STARTPTS,"
+        "highpass=f=45,volume=0.36,afade=t=in:d=0.14,afade=t=out:st=2.55:d=0.5[burn];"
+        "[2:a]aformat=sample_rates=48000:channel_layouts=stereo,highpass=f=45,volume=0.32,adelay=6575:all=1[impact];"
+        "[3:a]aformat=sample_rates=48000:channel_layouts=stereo,atrim=start=15.8:end=16.9,asetpts=PTS-STARTPTS,"
+        "volume=1.65,adelay=5510:all=1[radio];"
+        "[4:a]aformat=sample_rates=48000:channel_layouts=stereo,atrim=duration=7.95,volume=0.34,"
+        "afade=t=in:d=0.75,afade=t=out:st=7.15:d=0.8,adelay=17180:all=1[wind];"
+        "[5:a]asplit=7[g1][g2][g3][g4][g5][g6][g7];"
+    )
+    # Cut gunshots to the recorded start of each visible shot burst.
+    gun_delays = (20490, 20715, 20940, 21735, 21960, 23235, 23460)
+    for i, delay in enumerate(gun_delays, start=1):
+        graph += f"[g{i}]aformat=sample_rates=48000:channel_layouts=stereo,volume=0.46,adelay={delay}:all=1[g{i}mix];"
+    graph += (
+        "[6:a]aformat=sample_rates=48000:channel_layouts=stereo,volume=0.48,adelay=25435:all=1[tx];"
+        "[score][burn][impact][radio][wind][g1mix][g2mix][g3mix][g4mix][g5mix][g6mix][g7mix][tx]"
+        f"amix=inputs=13:duration=longest:normalize=0,apad,atrim=duration={DURATION:.6f},"
+        f"afade=t=out:st={DURATION-.30:.6f}:d=0.30,alimiter=limit=0.83:level=0:latency=1[a]"
+    )
+    ffmpeg(*inputs, "-filter_complex", graph, "-map", "[a]", "-c:a", "aac", "-b:a", "256k", dest)
 
 
 def main():
-    sync_final_screenshots()
+    cli = argparse.ArgumentParser(description=__doc__)
+    cli.add_argument("--frames", type=Path, required=True)
+    cli.add_argument("--music", type=Path, required=True)
+    cli.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
+    args = cli.parse_args()
 
-    if TMP.exists():
-        shutil.rmtree(TMP)
-    TMP.mkdir(parents=True, exist_ok=True)
+    frames = args.frames.resolve()
+    music = args.music.resolve()
+    output = args.output.resolve()
+    for clip in CLIPS:
+        for index in range(clip.start, clip.stop):
+            path = frames / f"MovieFrame{index:05d}.png"
+            if not path.is_file():
+                cli.error(f"Missing frame {path}")
+    if not music.is_file():
+        cli.error(f"Missing orchestral recording: {music}. Source: {MUSIC_SOURCE}")
 
-    # (src_image, duration_s, mode, tag, title, z0, z1, x0, x1, y0, y1)
-    scenes = [
-        (SHOTS_DST / "HighresScreenshot00010.png", 3.4, "badge_top", "T-00:18 // EARTH RELAY TELEMETRY", "", 1.00, 1.12, 0.50, 0.50, 0.50, 0.48),
-        (SHOTS_DST / "HighresScreenshot00011.png", 3.3, "badge_top", "CRUSTAL SHEAR // PACIFIC BELT FAILURE", "", 1.02, 1.14, 0.48, 0.52, 0.50, 0.50),
-        (SHOTS_DST / "HighresScreenshot00012.png", 3.5, "badge_top", "CORE EXPOSURE // LINK SEVERED", "", 1.00, 1.15, 0.50, 0.50, 0.50, 0.46),
-        (SHOTS_DST / "HighresScreenshot00009.png", 3.6, "badge_top", "JEZERO CRATER // RETRO-BURN DESCENT", "", 1.08, 1.00, 0.52, 0.48, 0.45, 0.50),
-        (SHOTS_DST / "HighresScreenshot00013.png", 3.8, "badge_top", "ASTER OUTPOST // LAST GREEN", "", 1.00, 1.08, 0.48, 0.52, 0.50, 0.50),
-        (SHOTS_DST / "HighresScreenshot00014.png", 3.4, "lower_third", "TRIPO PRO 3D // NASA HEAVY DROPSHIP", "12.6m Ceramic Hull · Custom PBR Bake & Landing Pad", 1.00, 1.10, 0.45, 0.55, 0.50, 0.48),
-        (SHOTS_DST / "HighresScreenshot00018.png", 3.3, "lower_third", "CARGO BAY INTERIOR", "Carved Walkable Cabin · Telemetry & Bio-Storage Deck", 1.00, 1.12, 0.50, 0.50, 0.50, 0.50),
-        (SHOTS_DST / "HighresScreenshot00003.png", 3.2, "lower_third", "LIFE SUPPORT & Z2 SUIT", "Pressurized Airlock · Oxygen Refill & Cryo Vault", 1.02, 1.10, 0.45, 0.55, 0.50, 0.48),
-        (SHOTS_DST / "HighresScreenshot00019.png", 3.7, "lower_third", "CRYO-SEED GENOMICS & SABATIER H2O", "Adapt Mars Crops + CO2 -> 2H2O Synthesis at 6.1 mbar", 1.00, 1.11, 0.52, 0.46, 0.52, 0.48),
-        (SHOTS_DST / "HighresScreenshot00016.png", 3.2, "lower_third", "MODULAR HABITAT COMPOUND", "Interconnected Sectors · HDU Airlock & Perimeter Floodlights", 1.00, 1.09, 0.48, 0.52, 0.50, 0.50),
-        (SHOTS_DST / "HighresScreenshot00006.png", 3.2, "lower_third", "ACTIVE TELEGRAPH COMBAT", "Interrupt Raider Lunges & Hold Outpost Infrastructure", 1.00, 1.13, 0.50, 0.50, 0.52, 0.48),
-        (SHOTS_DST / "HighresScreenshot00017.png", 3.8, "lower_third", "TRI-CLASS ALIEN SWARM", "Armored Breakers · Cover-Seeking Gunners · Weakspot Stagger", 1.02, 1.12, 0.46, 0.54, 0.50, 0.50),
-        (PREVIEWS / "HeavyDropship_sheet.png", 3.0, "hero_plate", "AI 3D PIPELINE // TRIPO PRO + BLENDER PBR", "7 Normalized Hero Assets · Clean Topology & Specular Tuning", 1.00, 1.06, 0.50, 0.50, 0.50, 0.50),
-        (SHOTS_DST / "HighresScreenshot00009.png", 4.5, "endcard", "", "", 1.02, 1.08, 0.50, 0.50, 0.50, 0.50),
-    ]
+    output.parent.mkdir(parents=True, exist_ok=True)
+    with TemporaryDirectory(prefix="mars-edit-", dir=output.parent) as tmp:
+        work = Path(tmp)
+        parts = []
+        for i, clip in enumerate(CLIPS):
+            part = work / f"clip-{i:02d}.mp4"
+            encode_clip(frames, clip, part, work)
+            parts.append(part)
+            print(f"Rendered {clip.name}", flush=True)
 
-    clips = []
-    durs = []
-    for idx, (img_p, dur, mode, tag, title, z0, z1, x0, x1, y0, y1) in enumerate(scenes):
-        if not img_p.exists():
-            raise FileNotFoundError(f"Missing image: {img_p}")
-        ov = TMP / f"ov_{idx:02d}.png"
-        clip = TMP / f"clip_{idx:02d}.mp4"
-        draw_overlay_png(ov, tag=tag, title=title, mode=mode)
-        make_ken_burns_clip(img_p, ov, clip, dur, z0, z1, x0, x1, y0, y1)
-        clips.append(clip)
-        durs.append(dur)
+        card = work / "end.png"
+        end = work / "end.mp4"
+        end_card(card)
+        ffmpeg("-loop", "1", "-framerate", FPS, "-i", card, "-frames:v", END_FRAMES,
+               "-vf", "fade=t=in:d=0.27,fade=t=out:st=3.72:d=0.28,format=yuv420p",
+               "-an", "-c:v", "libx264", "-threads", 3, "-preset", "fast", "-crf", 17, end)
+        parts.append(end)
 
-    # Concatenate video clips with smooth 0.5s xfade transitions
-    inputs = []
-    for c in clips:
-        inputs.extend(["-i", str(c)])
-
-    # Compute exact cumulative duration for audio alignment
-    xfade_filters = []
-    cur_label = "[0:v]"
-    cum = durs[0]
-    for i in range(1, len(clips)):
-        offset = cum - XFADE
-        out_label = f"[v{i}]" if i < len(clips) - 1 else "[vfinal]"
-        trans = "fadeblack" if i in (3, 13) else "fade"
-        xfade_filters.append(f"{cur_label}[{i}:v]xfade=transition={trans}:duration={XFADE:.3f}:offset={offset:.3f}{out_label}")
-        cur_label = out_label
-        cum = offset + durs[i]
-
-    total_dur = cum
-    print(f"Total video duration: {total_dur:.2f}s across {len(clips)} scenes")
-
-    video_only = TMP / "video_only.mp4"
-    run([
-        FFMPEG, "-y", "-hide_banner", "-loglevel", "error",
-        *inputs,
-        "-filter_complex", ";".join(xfade_filters),
-        "-map", "[vfinal]",
-        "-c:v", "libx264", "-preset", "medium", "-crf", "17", "-pix_fmt", "yuv420p",
-        str(video_only),
-    ])
-
-    # Build rich multi-layered audio track synced to key visual events
-    # Audio indices:
-    # 0: Prologue_Score.wav (0..18s)
-    # 1: Prologue_Radio.wav (0.4..17s)
-    # 2: SFX_Intro_EarthShatter.wav (at 3.0s)
-    # 3: SFX_Intro_LanderBurn.wav (at 8.7s)
-    # 4: SFX_Music_Calm_Loop.wav (at 15.0s..28.5s)
-    # 5: SFX_Wave_Start.wav (at 27.5s)
-    # 6: SFX_Music_Combat_Loop.wav (at 27.8s..total_dur)
-    # 7: SFX_Alien_Raider_Telegraph.wav (at 30.2s)
-    # 8: SFX_Rifle_Fire.wav (at 31.3s, 31.55s, 34.4s)
-    # 9: SFX_Alien_Breaker_Slam.wav (at 33.6s)
-    # 10: SFX_Transmit.wav (at total_dur - 4.3s)
-    fade_out_start = max(total_dur - 2.2, 1.0)
-    a_inputs = [
-        "-i", str(INTRO_AUDIO / "Prologue_Score.wav"),
-        "-i", str(INTRO_AUDIO / "Prologue_Radio.wav"),
-        "-i", str(AUDIO / "SFX_Intro_EarthShatter.wav"),
-        "-i", str(AUDIO / "SFX_Intro_LanderBurn.wav"),
-        "-i", str(AUDIO / "SFX_Music_Calm_Loop.wav"),
-        "-i", str(AUDIO / "SFX_Wave_Start.wav"),
-        "-stream_loop", "2", "-i", str(AUDIO / "SFX_Music_Combat_Loop.wav"),
-        "-i", str(AUDIO / "SFX_Alien_Raider_Telegraph.wav"),
-        "-i", str(AUDIO / "SFX_Rifle_Fire.wav"),
-        "-i", str(AUDIO / "SFX_Alien_Breaker_Slam.wav"),
-        "-i", str(AUDIO / "SFX_Transmit.wav"),
-    ]
-    tx_ms = int((total_dur - 4.3) * 1000)
-    afilter = (
-        "[0:a]aformat=sample_rates=48000:channel_layouts=stereo,atrim=0:17.5,afade=t=in:st=0:d=0.4,afade=t=out:st=15.0:d=2.5,volume=0.80[a0];"
-        "[1:a]aformat=sample_rates=48000:channel_layouts=stereo,atrim=0:16.5,adelay=400|400,afade=t=out:st=15.0:d=1.5,volume=0.62[a1];"
-        "[2:a]aformat=sample_rates=48000:channel_layouts=stereo,adelay=3000|3000,volume=0.75[a2];"
-        "[3:a]aformat=sample_rates=48000:channel_layouts=stereo,adelay=8700|8700,volume=0.68[a3];"
-        "[4:a]aformat=sample_rates=48000:channel_layouts=stereo,atrim=0:14.0,adelay=15200|15200,afade=t=in:st=15.2:d=1.5,afade=t=out:st=27.2:d=2.0,volume=0.72[a4];"
-        "[5:a]aformat=sample_rates=48000:channel_layouts=stereo,adelay=27500|27500,volume=0.85[a5];"
-        f"[6:a]aformat=sample_rates=48000:channel_layouts=stereo,atrim=0:{total_dur - 27.6:.2f},adelay=27800|27800,afade=t=in:st=27.8:d=0.8,afade=t=out:st={fade_out_start:.2f}:d=2.0,volume=0.78[a6];"
-        "[7:a]aformat=sample_rates=48000:channel_layouts=stereo,adelay=30200|30200,volume=0.75[a7];"
-        "[8:a]asplit=3[r1][r2][r3];"
-        "[r1]aformat=sample_rates=48000:channel_layouts=stereo,adelay=31300|31300,volume=0.65[a8a];"
-        "[r2]aformat=sample_rates=48000:channel_layouts=stereo,adelay=31550|31550,volume=0.65[a8b];"
-        "[r3]aformat=sample_rates=48000:channel_layouts=stereo,adelay=34400|34400,volume=0.65[a8c];"
-        "[9:a]aformat=sample_rates=48000:channel_layouts=stereo,adelay=33600|33600,volume=0.88[a9];"
-        f"[10:a]aformat=sample_rates=48000:channel_layouts=stereo,adelay={tx_ms}|{tx_ms},volume=0.82[a10];"
-        f"[a0][a1][a2][a3][a4][a5][a6][a7][a8a][a8b][a8c][a9][a10]amix=inputs=13:duration=longest:normalize=0,"
-        f"alimiter=limit=0.92,atrim=0:{total_dur:.3f},afade=t=out:st={fade_out_start:.2f}:d=2.1[amix]"
-    )
-
-    audio_only = TMP / "audio_mix.m4a"
-    run([
-        FFMPEG, "-y", "-hide_banner", "-loglevel", "error",
-        *a_inputs,
-        "-filter_complex", afilter,
-        "-map", "[amix]", "-c:a", "aac", "-b:a", "192k",
-        str(audio_only),
-    ])
-
-    OUT_VIDEO.parent.mkdir(parents=True, exist_ok=True)
-    run([
-        FFMPEG, "-y", "-hide_banner", "-loglevel", "error",
-        "-i", str(video_only),
-        "-i", str(audio_only),
-        "-c:v", "copy", "-c:a", "copy",
-        "-movflags", "+faststart", "-shortest",
-        str(OUT_VIDEO),
-    ])
-
-    # Extract 4 sample frames for visual verification
-    for sec in (4.5, 17.5, 34.5, max(total_dur - 1.5, 1.0)):
-        run([
-            FFMPEG, "-y", "-hide_banner", "-loglevel", "error",
-            "-ss", f"{sec:.2f}", "-i", str(OUT_VIDEO), "-frames:v", "1",
-            str(TMP / f"check_{int(sec):02d}s.png"),
-        ])
-
-    size_mb = OUT_VIDEO.stat().st_size / (1024 * 1024)
-    print(f"TRAILER_READY path={OUT_VIDEO} size={size_mb:.2f}MB duration={total_dur:.2f}s")
-    run([FFPROBE, "-v", "error", "-show_entries", "format=duration,size,bit_rate:stream=codec_name,width,height,r_frame_rate", "-of", "compact", str(OUT_VIDEO)])
+        playlist = work / "clips.txt"
+        playlist.write_text("".join(f"file '{part.name}'\n" for part in parts))
+        mixed = work / "soundtrack.m4a"
+        soundtrack(music, mixed)
+        result = work / "trailer.mp4"
+        ffmpeg("-f", "concat", "-safe", "0", "-i", playlist, "-i", mixed,
+               "-map", "0:v", "-map", "1:a", "-c", "copy", "-movflags", "+faststart",
+               "-metadata", "title=Mars: Last Green | Gameplay Trailer",
+               "-metadata", "comment=Edvard Grieg performance by the Musopen Symphony Orchestra (public domain).",
+               result)
+        shutil.move(result, output)
+    print(f"Saved {output} ({DURATION:.2f} seconds)")
 
 
 if __name__ == "__main__":

@@ -350,8 +350,8 @@
           </div>
           <div class="thumb-strip morph-in morph-d3">
             <div class="thumb-card" onclick="openVideoModal()">
-              <img src="Final_Screenshots/HighresScreenshot00012.png" alt="Promotional Trailer">
-              <div class="thumb-cap" style="color:var(--emerald-hi);">▶ TRAILER (42s)</div>
+              <img src="Mars_Last_Green_Trailer_Poster.jpg" alt="Aster One landing on Mars">
+              <div class="thumb-cap" style="color:var(--emerald-hi);">▶ TRAILER (29.4s)</div>
             </div>
             <div class="thumb-card" onclick="openLightboxBySrc('Final_Screenshots/HighresScreenshot00004.png')">
               <img src="Final_Screenshots/HighresScreenshot00004.png" alt="Greenhouse">
@@ -846,7 +846,7 @@
           <h1 class="slide-h1">Live Vulkan SM5 Captures, 3D Pipeline &amp; Test Ledger</h1>
         </div>
         <div style="display:flex; gap:6px;">
-          <button class="btn-chip active-ochre" onclick="openVideoModal()">▶ Watch 42s Trailer</button>
+          <button class="btn-chip active-ochre" onclick="openVideoModal()">▶ Watch the 29.4s Trailer</button>
           <button class="btn-chip active" id="tabGalVulkan" onclick="setSlide7Gallery('vulkan')">Vulkan SM5 (6)</button>
           <button class="btn-chip" id="tabGalAssets" onclick="setSlide7Gallery('assets')">3D Asset Sheets (6)</button>
         </div>
@@ -925,10 +925,10 @@
 <div class="lightbox" id="videoModal" onclick="if(event.target===this) closeVideoModal()">
   <div style="display:flex; flex-direction:column; align-items:center; gap:10px; max-width:86vw;">
     <div style="width:100%; display:flex; justify-content:space-between; align-items:center;">
-      <span class="mono" style="font-size:12px; color:var(--emerald-hi);">MARS: LAST GREEN // OFFICIAL HACKATHON TRAILER (42.4s · 720p H.264)</span>
+      <span class="mono" style="font-size:12px; color:var(--emerald-hi);">MARS: LAST GREEN // GAMEPLAY TRAILER (29.4s · 900p)</span>
       <button class="nav-btn" onclick="closeVideoModal()">✕ Close (Esc)</button>
     </div>
-    <video id="trailerPlayer" controls preload="metadata" style="max-width:82vw; max-height:74vh; border-radius:8px; border:1px solid var(--border-bright); background:#000;">
+    <video id="trailerPlayer" controls playsinline preload="metadata" poster="Mars_Last_Green_Trailer_Poster.jpg" style="max-width:82vw; max-height:74vh; border-radius:8px; border:1px solid var(--border-bright); background:#000;">
       <source src="Mars_Last_Green_Trailer.mp4" type="video/mp4">
     </video>
   </div>
